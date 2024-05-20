@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/home/kaycee/repos/foodies/foodies_users/foodies_users.csproj": {}
+    "/home/kayc/repos/foodies/foodies_users/foodies_users.csproj": {}
   },
   "projects": {
-    "/home/kaycee/repos/foodies/foodies_users/foodies_users.csproj": {
+    "/home/kayc/repos/foodies/foodies_users/foodies_users.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/kaycee/repos/foodies/foodies_users/foodies_users.csproj",
+        "projectUniqueName": "/home/kayc/repos/foodies/foodies_users/foodies_users.csproj",
         "projectName": "foodies_users",
-        "projectPath": "/home/kaycee/repos/foodies/foodies_users/foodies_users.csproj",
-        "packagesPath": "/home/kaycee/.nuget/packages/",
-        "outputPath": "/home/kaycee/repos/foodies/foodies_users/obj/",
+        "projectPath": "/home/kayc/repos/foodies/foodies_users/foodies_users.csproj",
+        "packagesPath": "/home/kayc/.nuget/packages/",
+        "outputPath": "/home/kayc/repos/foodies/foodies_users/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/kaycee/.nuget/NuGet/NuGet.Config"
+          "/home/kayc/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -45,7 +45,29 @@
           "dependencies": {
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
+              "version": "[8.0.5, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.5, )"
+            },
+            "Microsoft.AspNetCore.Mvc.Versioning": {
+              "target": "Package",
+              "version": "[5.1.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.5, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
               "version": "[8.0.4, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[6.6.1, )"
             }
           },
           "imports": [
@@ -67,7 +89,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.204/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.300/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
