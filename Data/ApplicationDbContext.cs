@@ -5,7 +5,7 @@ using foodies_api.Models;
 using foodies_api.Models.Dtos;
 using foodies_api.Models.Dtos.Auth;
 
-namespace foodies_users.Data;
+namespace foodies_api.Data;
 
 public class ApplicationDbContext : IdentityDbContext<IdentityUser>
 {

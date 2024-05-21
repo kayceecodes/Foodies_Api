@@ -1,1 +1,1 @@
-# foodies_users
+# foodies_api

@@ -1,6 +1,6 @@
 using System.Reflection;
 using System.Text;
-using foodies_users.Data;
+using foodies_api.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
