@@ -1,4 +1,3 @@
-
 using System.Reflection;
 using System.Text;
 using foodies_users.Data;
@@ -67,7 +66,5 @@ app.UseSwaggerUI(options =>
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.MapGet("/", () => "Hello World!");
 
 app.Run();
