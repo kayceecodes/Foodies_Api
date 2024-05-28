@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: foodiesapi-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: foodiesapi
+  template:
+    metadata:
+      labels:
+        app: foodiesapi
+    spec:
+      containers:
+        - name: foodiesapi
+          image: kayceecode/foodiesapi:latest
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: foodiesapi-clusterip-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: foodiesapi
+  ports:
+    - name: foodiesapi
+      protocol: TCP
+      port: 80
+      targetPort: 80
