@@ -1,9 +1,7 @@
 using System.Reflection;
-using System.Text;
 using foodies_api.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,7 +18,7 @@ builder.Services.AddCors();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 // builder.Services.AddAuthentication().AddJwtBearer();
-builder.Services.AddAuthorization();
+// builder.Services.AddAuthorization();
 
 builder.Services.AddApiVersioning(options =>
 {
@@ -39,32 +37,34 @@ builder.Services.AddSwaggerGen(options =>
     options.IncludeXmlComments(xmlPath);
 });
 
-builder.Services.AddAuthentication("Bearer")
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-        };
-    });
+// builder.Services.AddAuthentication("Bearer")
+//     .AddJwtBearer(options =>
+//     {
+//         options.TokenValidationParameters = new TokenValidationParameters
+//         {
+//             ValidateIssuer = true,
+//             ValidateAudience = true,
+//             ValidateLifetime = true,
+//             ValidateIssuerSigningKey = true,
+//             ValidIssuer = builder.Configuration["Jwt:Issuer"],
+//             ValidAudience = builder.Configuration["Jwt:Audience"],
+//             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+//         };
+//     });
 
 var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI(options =>
-{
+{   // Opens at http://localhost:(whatever port numer)/index.html
     options.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API v1");
     options.RoutePrefix = string.Empty; // Set the Swagger UI at the root URL
 });
 
+// app.UseHttpsRedirection();
+app.ConfigurationUserEndpoints();
 app.UseCors();
-app.UseAuthentication();
-app.UseAuthorization();
+// app.UseAuthentication();
+// app.UseAuthorization();
 
 app.Run();
