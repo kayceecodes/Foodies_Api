@@ -1,11 +1,12 @@
 using System.Reflection;
 using foodies_api.Data;
+using foodies_api.Endpoints;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-
+var configuration = builder.Configuration;
 var conn = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(conn));
@@ -14,7 +15,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql
 //     opt.UseInMemoryDatabase("ProductsDb")
 // ); // For simplicity, using in-memory database
 
-builder.Services.AddCors();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 // builder.Services.AddAuthentication().AddJwtBearer();
@@ -63,7 +64,7 @@ app.UseSwaggerUI(options =>
 
 // app.UseHttpsRedirection();
 app.ConfigurationUserEndpoints();
-app.UseCors();
+// app.UseCors();
 // app.UseAuthentication();
 // app.UseAuthorization();
 

@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace foodies_api.Data;
 
-public class User : IdentityUser
+public class User
 {
     public int Id { get; set; }
     public string Name { get; set; }
