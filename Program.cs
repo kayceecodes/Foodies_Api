@@ -1,8 +1,10 @@
 using System.Reflection;
+using System.Text;
 using foodies_api.Data;
 using foodies_api.Endpoints;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,20 +40,28 @@ builder.Services.AddSwaggerGen(options =>
     options.IncludeXmlComments(xmlPath);
 });
 
-// builder.Services.AddAuthentication("Bearer")
-//     .AddJwtBearer(options =>
-//     {
-//         options.TokenValidationParameters = new TokenValidationParameters
-//         {
-//             ValidateIssuer = true,
-//             ValidateAudience = true,
-//             ValidateLifetime = true,
-//             ValidateIssuerSigningKey = true,
-//             ValidIssuer = builder.Configuration["Jwt:Issuer"],
-//             ValidAudience = builder.Configuration["Jwt:Audience"],
-//             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-//         };
-//     });
+var validIssuer = configuration["JwtSettings:Issuer"];
+var ValidAudience = configuration["JwtSettings:ValidAudience"];
+var issuerSigningKey = new SymmetricSecurityKey(
+    Encoding.UTF8.GetBytes()
+)
+
+
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidIssuer = configuration["JwtSettings:Issuer"],
+            ValidAudience = configuration["JwtSettings:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+        };
+    });
 
 var app = builder.Build();
 
@@ -65,6 +75,7 @@ app.UseSwaggerUI(options =>
 // app.UseHttpsRedirection();
 app.ConfigurationUserEndpoints();
 // app.UseCors();
+// Order of app.func matters. Authentication before Authorization. Both Auths before Controllers/Endpointss
 // app.UseAuthentication();
 // app.UseAuthorization();
 

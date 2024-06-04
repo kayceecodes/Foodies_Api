@@ -1,12 +1,7 @@
-
 using AutoMapper;
 using foodies_api.Auth;
 using foodies_api.Data;
-using foodies_api.Models.Dtos;
 using foodies_yelp.Models.Dtos.Responses;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 
 namespace foodies_api.Endpoints;
 
@@ -39,13 +34,13 @@ public static class UserEndpoints
 
         app.MapPost("/login", async (User user, ApplicationDbContext dbContext, IConfiguration config) => 
         {
-            var u = dbContext.Users.Where(u => u.Email == user.Email && u.Password == user.Password).FirstOrDefault();
+            var matchedUser = dbContext.Users.Where(u => u.Email == user.Email && u.Password == user.Password).FirstOrDefault();
             var Auth = new Authentication(config);
-            if(u == null)
+            if(matchedUser == null)
                 return Results.Empty;
             else
             {
-                var token = Auth.CreateAccessToken(u);
+                var token = Auth.CreateAccessToken(matchedUser);
                return TypedResults.Ok(token);
             }
         })
