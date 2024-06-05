@@ -20,8 +20,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-// builder.Services.AddAuthentication().AddJwtBearer();
-// builder.Services.AddAuthorization();
+
 
 builder.Services.AddApiVersioning(options =>
 {
@@ -40,13 +39,6 @@ builder.Services.AddSwaggerGen(options =>
     options.IncludeXmlComments(xmlPath);
 });
 
-var validIssuer = configuration["JwtSettings:Issuer"];
-var ValidAudience = configuration["JwtSettings:ValidAudience"];
-var issuerSigningKey = new SymmetricSecurityKey(
-    Encoding.UTF8.GetBytes()
-)
-
-
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer(options =>
     {
@@ -55,13 +47,14 @@ builder.Services.AddAuthentication("Bearer")
             ValidIssuer = configuration["JwtSettings:Issuer"],
             ValidAudience = configuration["JwtSettings:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+                Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"])),
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
         };
     });
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 

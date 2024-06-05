@@ -1,7 +1,10 @@
 using AutoMapper;
 using foodies_api.Auth;
 using foodies_api.Data;
+using foodies_api.Models.Dtos;
 using foodies_yelp.Models.Dtos.Responses;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace foodies_api.Endpoints;
 
@@ -9,10 +12,12 @@ public static class UserEndpoints
 {
     public static void ConfigurationUserEndpoints(this WebApplication app) 
     {
-        app.MapGet("/api/user", async Task<IResult> (ApplicationDbContext dbContext) =>
+        var api = app.MapGroup("/api");
+        
+        api.MapGet("/api/users", (ApplicationDbContext dbContext) =>
         {
             var users = dbContext.Users.ToList();
-            
+
             return TypedResults.Ok(users);
         })
         .WithName("Get Users")
@@ -20,9 +25,11 @@ public static class UserEndpoints
         .Produces<APIResult<List<User>>>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status500InternalServerError);
 
-        app.MapPost("/users", async (User user, ApplicationDbContext dbContext) =>
+        api.MapPost("/api/user", [Authorize] async ([FromServices] IMapper mapper, UserDto userDto, ApplicationDbContext dbContext) =>
         {
-            var users = dbContext.Users.Add(user);
+
+            var mappedUser = mapper.Map<GetUser>(userDto);
+            var users = dbContext.Users.Add(mappedUser);
 
             await dbContext.SaveChangesAsync();
             return TypedResults.Ok(users);
@@ -32,7 +39,7 @@ public static class UserEndpoints
         .Produces<APIResult<List<User>>>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status500InternalServerError);
 
-        app.MapPost("/login", async (User user, ApplicationDbContext dbContext, IConfiguration config) => 
+        api.MapPost("/login", async (User user, ApplicationDbContext dbContext, IConfiguration config) => 
         {
             var matchedUser = dbContext.Users.Where(u => u.Email == user.Email && u.Password == user.Password).FirstOrDefault();
             var Auth = new Authentication(config);
