@@ -19,10 +19,10 @@ public class Authentication(IConfiguration config)
 
         var claims = new ClaimsIdentity(new []
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Name),
+            new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
             new Claim(JwtRegisteredClaimNames.Email, user.Email)
         });
-        var expires = DateTime.UtcNow.AddDays(1);
+        var expires = DateTime.UtcNow.AddHours(1);
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {

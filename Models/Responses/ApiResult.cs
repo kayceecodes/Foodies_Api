@@ -1,10 +1,12 @@
-using System.Net;
+﻿using System.Net;
+using foodies_api.Data;
+// using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace foodies_yelp.Models.Dtos.Responses;
+namespace foodies_api.Models.Responses;
 
-public class APIResult<T>
+public class ApiResult<T>
 {
-    public APIResult()
+    public ApiResult()
     {
         ErrorMessages = new List<string>();
     }
@@ -14,9 +16,9 @@ public class APIResult<T>
     public List<string>? ErrorMessages { get; set; }
     public Exception? Exception { get; set; }
 
-    public static APIResult<T> Fail(string message, HttpStatusCode statusCode, Exception? exception)
+    public static ApiResult<T> Fail(string message, HttpStatusCode statusCode, Exception? exception)
         {
-            return new APIResult<T>
+            return new ApiResult<T>
             {
                 IsSuccess = false,
                 Data = default,
@@ -26,9 +28,9 @@ public class APIResult<T>
             };
         }
 
-        public static APIResult<T> Fail(string message, HttpStatusCode statusCode)
+        public static ApiResult<T> Fail(string message, HttpStatusCode statusCode)
         {
-            return new APIResult<T>
+            return new ApiResult<T>
             {
                 IsSuccess = false,
                 Data = default,
@@ -37,9 +39,9 @@ public class APIResult<T>
             };
         }
 
-        public static APIResult<T> Pass(T data)
+        public static ApiResult<T> Pass(T data)
         {
-            return new APIResult<T>
+            return new ApiResult<T>
             {
                 IsSuccess = true,
                 Data = data,
@@ -50,9 +52,9 @@ public class APIResult<T>
         }
 }
 
-public class APIResult
+public class ApiResult
 {
-    public APIResult()
+    public ApiResult()
     {
         ErrorMessages = new List<string>();
     }
@@ -60,4 +62,5 @@ public class APIResult
     public object Data { get; set; }
     public HttpStatusCode StatusCode { get; set; }
     public List<string> ErrorMessages { get; set; }
+    public Exception? Exception { get; set; }
 }

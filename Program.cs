@@ -1,17 +1,21 @@
 using System.Reflection;
 using System.Text;
+using foodies_api;
+using foodies_api.Constants;
 using foodies_api.Data;
 using foodies_api.Endpoints;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata.Internal;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var conn = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(conn));
+builder.Services.AddAutoMapper(typeof(UserProfile));
 
 // builder.Services.AddDbContext<UserRolesContext>(opt => 
 //     opt.UseInMemoryDatabase("ProductsDb")
@@ -54,7 +58,11 @@ builder.Services.AddAuthentication("Bearer")
             ValidateIssuerSigningKey = true,
         };
     });
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(Identity.AdminUserPolicyName, p =>
+        p.RequireClaim(Identity.AdminUserClaimName, "true"));
+});
 
 var app = builder.Build();
 
