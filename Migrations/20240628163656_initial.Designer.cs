@@ -11,8 +11,8 @@ using foodies_api.Data;
 
 namespace foodies_api.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240606180918_initial")]
+    [DbContext(typeof(AppDbContext))]
+    [Migration("20240628163656_initial")]
     partial class initial
     {
         /// <inheritdoc />

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using foodies_api.Data;
+using foodies_api.Models;
 using foodies_api.Models.Dtos;
 
 namespace foodies_api;

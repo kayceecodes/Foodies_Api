@@ -1,11 +1,12 @@
+using System.Net;
 using AutoMapper;
 using foodies_api.Auth;
 using foodies_api.Data;
 using foodies_api.Models.Dtos;
 using foodies_api.Models.Responses;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.IdentityModel.Tokens;
+using foodies_api.Models;
 
 namespace foodies_api.Endpoints;
 
@@ -15,7 +16,7 @@ public static class UserEndpoints
     {
         var appGroup = app.MapGroup("/api");
         
-        appGroup.MapGet("/users", (ApplicationDbContext dbContext) =>
+        appGroup.MapGet("/users", (AppDbContext dbContext) =>
         {
             var users = dbContext.Users.ToList();
 
@@ -24,10 +25,12 @@ public static class UserEndpoints
         .WithName("Get Users")
         .Accepts<string>("application/json")
         .Produces<ApiResult<List<User>>>(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status500InternalServerError);
+        .Produces(StatusCodes.Status400BadRequest)
+        .Produces(StatusCodes.Status500InternalServerError)
+        .WithOpenApi();
 
-        // appGroup.MapPost("/user", [Authorize(Policy = Identity.AdminUserPolicyName)] async ([FromServices] IMapper mapper, UserDto dto, ApplicationDbContext db) =>
-        appGroup.MapPost("/adduser", async ([FromServices] IMapper mapper, UserDto dto, ApplicationDbContext db) =>
+        // appGroup.MapPost("/user", [Authorize(Policy = Identity.AdminUserPolicyName)] async ([FromServices] IMapper mapper, UserDto dto, AppContext db) =>
+        appGroup.MapPost("/users/add", async ([FromServices] IMapper mapper, UserDto dto, AppDbContext db) =>
         {
             var mappedUser = mapper.Map<User>(dto);
             mappedUser.Id = Guid.NewGuid();
@@ -40,19 +43,21 @@ public static class UserEndpoints
         .WithName("Add User")
         .Accepts<string>("application/json")
         .Produces<ApiResult<List<User>>>(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status500InternalServerError);
+        .Produces(StatusCodes.Status400BadRequest)
+        .Produces(StatusCodes.Status500InternalServerError)
+        .WithOpenApi();
 
-        appGroup.MapPost("/login", async ([FromBody] UserDto dto, ApplicationDbContext db, IConfiguration config) => 
+        appGroup.MapPost("/login", async ([FromBody] UserDto dto, AppDbContext context, IConfiguration config) => 
         {
             var matchedUser = new User();
             if(!dto.Email.IsNullOrEmpty())
-                matchedUser = db.Users.Where(u => u.Email == dto.Email && u.Password == dto.Password).FirstOrDefault();
+                matchedUser = context.Users.Where(u => u.Email == dto.Email && u.Password == dto.Password).FirstOrDefault();
             else 
-                matchedUser = db.Users.Where(u => u.UserName == dto.Username && u.Password == dto.Password).FirstOrDefault();
+                matchedUser = context.Users.Where(u => u.UserName == dto.Username && u.Password == dto.Password).FirstOrDefault();
             
             var Auth = new Authentication(config);
             if(matchedUser == null)
-                return Results.Empty;
+                return Results.NotFound();
             
             var token = Auth.CreateAccessToken(matchedUser);
             
@@ -61,22 +66,32 @@ public static class UserEndpoints
         .WithName("Login")
         .Accepts<string>("application/json")
         .Produces<ApiResult<List<User>>>(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status400BadRequest)
+        .Produces(StatusCodes.Status404NotFound)
         .Produces(StatusCodes.Status500InternalServerError)
         .WithOpenApi();
 
-         appGroup.MapPost("/user/delete", async (Guid userId, ApplicationDbContext db, IConfiguration config) => 
+        appGroup.MapDelete("/users/delete/", async ([FromBody] UserDto userDto, AppDbContext context, IConfiguration config) => 
         {
-            var matchedUser = db.Users.Where(u => u.Id == userId).FirstOrDefault();
-            var user = db.Users.Remove(matchedUser);
-            var 
-            ApiResult<User> response = user;
+            var user = await context.Users.FindAsync(userDto.Id);
+            var result = new ApiResult<User>();
+            
+            if(user == null)
+                return Results.NotFound();
 
-             
-            return TypedResults.Ok(matchedUser);
+            var users = context.Users.Remove(user);
+            result = ApiResult<User>.Pass(data: user);
+            
+            await context.SaveChangesAsync();
+
+            return TypedResults.Ok(result);
+
         })
         .WithName("Delete User")
         .Accepts<string>("application/json")
         .Produces(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status400BadRequest)
+        .Produces(StatusCodes.Status404NotFound)
         .Produces(StatusCodes.Status500InternalServerError)
         .WithOpenApi();
     }

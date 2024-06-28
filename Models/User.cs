@@ -1,11 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
-namespace foodies_api.Data;
+namespace foodies_api.Models;
 
+[PrimaryKey(nameof(Id))]
 public class User
 {
-    [Required]
+    [Required, Key]
     public Guid Id { get; set; }
     [Required]
     public string FirstAndLastName { get; set; }

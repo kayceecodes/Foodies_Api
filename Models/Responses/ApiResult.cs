@@ -14,7 +14,7 @@ public class ApiResult<T>
     public T Data { get; set; }
     public HttpStatusCode StatusCode { get; set; }
     public List<string>? ErrorMessages { get; set; }
-    public Exception? Exception { get; set; }
+    public Exception Exception { get; set; }
 
     public static ApiResult<T> Fail(string message, HttpStatusCode statusCode, Exception? exception)
         {
@@ -62,5 +62,5 @@ public class ApiResult
     public object Data { get; set; }
     public HttpStatusCode StatusCode { get; set; }
     public List<string> ErrorMessages { get; set; }
-    public Exception? Exception { get; set; }
+    public string Exception { get; set; }
 }

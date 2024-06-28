@@ -8,13 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata.Internal;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var conn = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(conn));
+builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(conn));
 builder.Services.AddAutoMapper(typeof(UserProfile));
 
 // builder.Services.AddDbContext<UserRolesContext>(opt => 
