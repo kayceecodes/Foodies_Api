@@ -19,7 +19,7 @@ public class Authentication(IConfiguration config)
 
         var claims = new ClaimsIdentity(new []
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Username),
             new Claim(JwtRegisteredClaimNames.Email, user.Email)
         });
         var expires = DateTime.UtcNow.AddHours(1);

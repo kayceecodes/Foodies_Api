@@ -1,4 +1,3 @@
-using System.Net;
 using AutoMapper;
 using foodies_api.Auth;
 using foodies_api.Data;
@@ -47,21 +46,25 @@ public static class UserEndpoints
         .Produces(StatusCodes.Status500InternalServerError)
         .WithOpenApi();
 
-        appGroup.MapPost("/login", async ([FromBody] UserDto dto, AppDbContext context, IConfiguration config) => 
+        appGroup.MapPost("/login", async ([FromBody] UserDto dto, AppDbContext context, IConfiguration config, IMapper mapper) => 
         {
             var matchedUser = new User();
             if(!dto.Email.IsNullOrEmpty())
                 matchedUser = context.Users.Where(u => u.Email == dto.Email && u.Password == dto.Password).FirstOrDefault();
             else 
-                matchedUser = context.Users.Where(u => u.UserName == dto.Username && u.Password == dto.Password).FirstOrDefault();
+                matchedUser = context.Users.Where(u => u.Username == dto.Username && u.Password == dto.Password).FirstOrDefault();
             
             var Auth = new Authentication(config);
             if(matchedUser == null)
                 return Results.NotFound();
             
             var token = Auth.CreateAccessToken(matchedUser);
-            
-            return TypedResults.Ok(token);
+            var mappedUserDto = mapper.Map<UserDto>(matchedUser);
+            mappedUserDto.Token = token;
+
+            var result = ApiResult<UserDto>.Pass(mappedUserDto);
+
+            return TypedResults.Ok(result);
         })
         .WithName("Login")
         .Accepts<string>("application/json")

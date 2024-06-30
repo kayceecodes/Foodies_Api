@@ -12,8 +12,8 @@ using foodies_api.Data;
 namespace foodies_api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240628163656_initial")]
-    partial class initial
+    [Migration("20240630214457_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace foodies_api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("foodies_api.Data.User", b =>
+            modelBuilder.Entity("foodies_api.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -43,7 +43,7 @@ namespace foodies_api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("UserName")
+                    b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("text");
 

@@ -22,7 +22,7 @@ namespace foodies_api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("foodies_api.Data.User", b =>
+            modelBuilder.Entity("foodies_api.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -40,7 +40,7 @@ namespace foodies_api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("UserName")
+                    b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("text");
 
