@@ -72,11 +72,14 @@ app.UseSwaggerUI(options =>
     options.RoutePrefix = string.Empty; // Set the Swagger UI at the root URL
 });
 
+// Order of app.func matters. Authentication before Authorization. Both Auths before Controllers/Endpointss
+app.UseAuthentication();
+app.UseAuthorization();
+
 // app.UseHttpsRedirection();
 app.ConfigurationUserEndpoints();
+app.ConfigurationAuthEndpoints();
 // app.UseCors();
-// Order of app.func matters. Authentication before Authorization. Both Auths before Controllers/Endpointss
-// app.UseAuthentication();
-// app.UseAuthorization();
+
 
 app.Run();

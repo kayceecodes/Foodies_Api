@@ -6,6 +6,8 @@ using foodies_api.Models.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using foodies_api.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace foodies_api.Endpoints;
 
@@ -25,52 +27,6 @@ public static class UserEndpoints
         .Accepts<string>("application/json")
         .Produces<ApiResult<List<User>>>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status400BadRequest)
-        .Produces(StatusCodes.Status500InternalServerError)
-        .WithOpenApi();
-
-        // appGroup.MapPost("/user", [Authorize(Policy = Identity.AdminUserPolicyName)] async ([FromServices] IMapper mapper, UserDto dto, AppContext db) =>
-        appGroup.MapPost("/users/add", async ([FromServices] IMapper mapper, UserDto dto, AppDbContext db) =>
-        {
-            var mappedUser = mapper.Map<User>(dto);
-            mappedUser.Id = Guid.NewGuid();
-            var users = db.Users.Add(mappedUser);
-
-            await db.SaveChangesAsync();
-            
-            return TypedResults.Ok(mappedUser);
-        })
-        .WithName("Add User")
-        .Accepts<string>("application/json")
-        .Produces<ApiResult<List<User>>>(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status400BadRequest)
-        .Produces(StatusCodes.Status500InternalServerError)
-        .WithOpenApi();
-
-        appGroup.MapPost("/login", async ([FromBody] UserDto dto, AppDbContext context, IConfiguration config, IMapper mapper) => 
-        {
-            var matchedUser = new User();
-            if(!dto.Email.IsNullOrEmpty())
-                matchedUser = context.Users.Where(u => u.Email == dto.Email && u.Password == dto.Password).FirstOrDefault();
-            else 
-                matchedUser = context.Users.Where(u => u.Username == dto.Username && u.Password == dto.Password).FirstOrDefault();
-            
-            var Auth = new Authentication(config);
-            if(matchedUser == null)
-                return Results.NotFound();
-            
-            var token = Auth.CreateAccessToken(matchedUser);
-            var mappedUserDto = mapper.Map<UserDto>(matchedUser);
-            mappedUserDto.Token = token;
-
-            var result = ApiResult<UserDto>.Pass(mappedUserDto);
-
-            return TypedResults.Ok(result);
-        })
-        .WithName("Login")
-        .Accepts<string>("application/json")
-        .Produces<ApiResult<List<User>>>(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status400BadRequest)
-        .Produces(StatusCodes.Status404NotFound)
         .Produces(StatusCodes.Status500InternalServerError)
         .WithOpenApi();
 
@@ -96,6 +52,30 @@ public static class UserEndpoints
         .Produces(StatusCodes.Status400BadRequest)
         .Produces(StatusCodes.Status404NotFound)
         .Produces(StatusCodes.Status500InternalServerError)
+        .WithOpenApi();
+
+        appGroup.MapPut("/users/update/", async ([FromBody] UserDto userDto, AppDbContext context, IConfiguration config) => 
+        {
+            var rowsAffected = await context.Users.Where(u => u.Id == userDto.Id)
+                .ExecuteUpdateAsync(updates => 
+                    updates.SetProperty(u => u.Email, userDto.Email)
+                           .SetProperty(u => u.FirstAndLastName, userDto.FirstName + " " + userDto.LastName)
+                           .SetProperty(u => u.Password, userDto.Password)
+                           .SetProperty(u => u.Username, userDto.Username));
+            
+            var result = new ApiResult<UserDto>()
+            {
+                IsSuccess = true,
+                StatusCode = HttpStatusCode.OK,
+                Data = userDto,
+            };
+
+            return rowsAffected == 0 ? Results.NotFound() : TypedResults.Ok(result);
+        })
+        .WithName("Delete User")
+        .Accepts<string>("application/json")
+        .Produces(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status404NotFound)
         .WithOpenApi();
     }
 }
