@@ -1,10 +1,7 @@
-using AutoMapper;
-using foodies_api.Auth;
 using foodies_api.Data;
 using foodies_api.Models.Dtos;
 using foodies_api.Models.Responses;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using foodies_api.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
@@ -72,7 +69,7 @@ public static class UserEndpoints
 
             return rowsAffected == 0 ? Results.NotFound() : TypedResults.Ok(result);
         })
-        .WithName("Delete User")
+        .WithName("Update User")
         .Accepts<string>("application/json")
         .Produces(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status404NotFound)

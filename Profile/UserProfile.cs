@@ -17,7 +17,8 @@ public class UserProfile : Profile
 
         CreateMap<User, UserDto>() 
         .ForMember(dest => dest.FirstName, src => src.MapFrom<FirstNameResolver>())
-        .ForMember(dest => dest.Username, src => src.MapFrom<LastNameResolver>())
+        .ForMember(dest => dest.LastName, src => src.MapFrom<LastNameResolver>())
+        .ForMember(dest => dest.Username, src => src.MapFrom(x => x.Username))
         .ForMember(dest => dest.Email, src => src.MapFrom(x => x.Email))
         .ForMember(dest => dest.Password, src => src.MapFrom(x => x.Password));
     }    
@@ -39,8 +40,8 @@ public class LastNameResolver : IValueResolver<User, UserDto, string>
     public string Resolve(User source, UserDto destination, string destMember, ResolutionContext context)
     {
         if (source.FirstAndLastName == null || !source.FirstAndLastName.Contains(' '))
-            return string.Empty;
+            return source.FirstAndLastName;
 
-        return source.FirstAndLastName.Substring(source.FirstAndLastName.IndexOf(' ') + 1);
+        return source.FirstAndLastName.Split(' ')[1];
     }
 }

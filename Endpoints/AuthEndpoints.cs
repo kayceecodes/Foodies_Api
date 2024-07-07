@@ -59,7 +59,7 @@ public static class AuthEndpoints
                 result = new ApiResult<UserDto>() 
                 {
                     IsSuccess = false,
-                    StatusCode = HttpStatusCode.Conflict,
+                    StatusCode = HttpStatusCode.Accepted,
                     ErrorMessages = ["Email already exists, use another email or recover your account"]
                 };
                 return TypedResults.Ok(result);
