@@ -12,6 +12,10 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var conn = builder.Configuration.GetConnectionString("DefaultConnection");
+var dbPassword = configuration["DbPassword"];
+
+// temporarily hiding password in user-secrets
+conn = $"User ID=postgres;Password={dbPassword};Host=localhost;Port=5430;Database=foodiesapidb;Pooling=true;";
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(conn));
 builder.Services.AddAutoMapper(typeof(UserProfile));
@@ -20,10 +24,8 @@ builder.Services.AddAutoMapper(typeof(UserProfile));
 //     opt.UseInMemoryDatabase("ProductsDb")
 // ); // For simplicity, using in-memory database
 
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 
 builder.Services.AddApiVersioning(options =>
 {
@@ -77,9 +79,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // app.UseHttpsRedirection();
+
 app.ConfigurationUserEndpoints();
 app.ConfigurationAuthEndpoints();
-// app.UseCors();
+app.ConfigurationBusinessEndpoints();
 
+// app.UseCors();
 
 app.Run();

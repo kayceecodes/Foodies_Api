@@ -21,4 +21,8 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.*-*" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models/Requests/" />
+  </ItemGroup>
+
 </Project>

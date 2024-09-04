@@ -2,7 +2,6 @@ using AutoMapper;
 using foodies_api.Auth;
 using foodies_api.Data;
 using foodies_api.Models.Dtos;
-using foodies_api.Models.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using foodies_api.Models;

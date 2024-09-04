@@ -1,6 +1,5 @@
 using foodies_api.Data;
 using foodies_api.Models.Dtos;
-using foodies_api.Models.Responses;
 using Microsoft.AspNetCore.Mvc;
 using foodies_api.Models;
 using Microsoft.EntityFrameworkCore;

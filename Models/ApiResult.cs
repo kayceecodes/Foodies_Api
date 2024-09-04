@@ -2,7 +2,7 @@
 using foodies_api.Data;
 // using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace foodies_api.Models.Responses;
+namespace foodies_api.Models;
 
 public class ApiResult<T>
 {
