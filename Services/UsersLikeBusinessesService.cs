@@ -13,25 +13,30 @@ namespace foodies_api.Services;
 
 public class UsersLikeBusinessesService : IUsersLikeBusinessesService
 {
-    private AppDbContext _context { get; set; }
-    private IMapper mapper { get; set; }
-    public UsersLikeBusinessesService(AppDbContext context) 
+    private IMapper _mapper { get; set; }
+    private IUsersLikeBusinessesRepository _repository { get; set; }
+    private ILogger _logger { get; set; }
+
+    public UsersLikeBusinessesService(ILogger logger, IMapper mapper, IUsersLikeBussinessesRepository repository) 
     {
+        _logger = logger;
+        _mapper = mapper;
         _context = context;
+        _repository = repository;
     }
 
-    public async Task<ApiResult<UserLikeBusiness>> AddUserLikeBusiness(UserLikeBusinessDto dto, [FromServices] IMapper mapper)
+    public async Task<ApiResult<UserLikeBusiness>> AddUserLikeBusiness(UserLikeBusinessDto dto)
     {
-        var mapped = mapper.Map<GetUserLikeBusinessResponse>(dto).ToList();
-        var UserLikeBusiness = _context.userLikeBusinesses.AddAsync(
+        var mapped = _mapper.Map<UserLikeBusiness>(dto);
+        var UserLikeBusiness = await _context.userLikeBusinesses.AddAsync(
             new UserLikeBusiness() { 
                 UserId = mapped.UserId, 
-                FullName = mapped.FirstAndLastName, 
+                FullName = mapped.FullName, 
                 BusinessId = mapped.BusinessId, 
                 BusinessName = mapped.BusinessName }
         );
         
-        return await new ApiResult<UserLikeBusiness> { Data = mapped, IsSuccess = true, StatusCode = HttpStatusCode.OK };
+        return new ApiResult<UserLikeBusiness> { Data = mapped, IsSuccess = true, StatusCode = HttpStatusCode.OK };
     }
 
     public async Task<ApiResult<UserLikeBusiness>> RemoveUserLikeBusiness(UserLikeBusiness dto)

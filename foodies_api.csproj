@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Models/Dtos/Requests/" />
     <Folder Include="Models/Requests/" />
   </ItemGroup>
 
