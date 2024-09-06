@@ -18,7 +18,7 @@ var dbPassword = configuration["DbPassword"];
 conn = $"User ID=postgres;Password={dbPassword};Host=localhost;Port=5430;Database=foodiesapidb;Pooling=true;";
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(conn));
-builder.Services.AddAutoMapper(typeof(UserProfile));
+builder.Services.AddAutoMapper(typeof(UserProfile), typeof(Business));
 
 // builder.Services.AddDbContext<UserRolesContext>(opt => 
 //     opt.UseInMemoryDatabase("ProductsDb")
@@ -82,7 +82,7 @@ app.UseAuthorization();
 
 app.ConfigurationUserEndpoints();
 app.ConfigurationAuthEndpoints();
-app.ConfigurationBusinessEndpoints();
+app.ConfigurationUserLikeBusinessEndpoints();
 
 // app.UseCors();
 

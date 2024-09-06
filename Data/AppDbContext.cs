@@ -9,6 +9,8 @@ public class AppDbContext : DbContext
     {
     }
     public DbSet<User> Users { get; set; }
+    public DbSet<Business> Businesses { get; set; }
+    public DbSet<UserLikeBusiness> userLikeBusinesses { get; set; }
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
