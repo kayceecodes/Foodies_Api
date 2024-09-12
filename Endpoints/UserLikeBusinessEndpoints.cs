@@ -1,23 +1,20 @@
-using System;
 using AutoMapper;
-using foodies_api.Data;
-using foodies_api.Interfaces.Services;
 using foodies_api.Models;
 using foodies_api.Models.Dtos;
 using foodies_api.Services;
-using Microsoft.AspNetCore.Http.HttpResults;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace foodies_api.Endpoints;
 
 public static class UserLikeBusinessEndpoints
 {
-    public static void ConfigurationUserLikeBusinessEndpoints(this WebApplication app, AppDbContext context) 
+    public static void ConfigurationUserLikeBusinessEndpoints(this WebApplication app) 
     {
         // Uses Search object with propeerties used in Yelp's API
         app.MapPost("/api/userlikebusiness/add/{dto}", async Task<IResult> ([FromServices] IMapper mapper, [AsParameters] UserLikeBusinessDto dto) =>
         {
-            IUsersLikeBusinessesService service = new UsersLikeBusinessesService(context);
+            var service = app.Services.GetRequiredService<UsersLikeBusinessesService>();
 
             ApiResult<UserLikeBusiness> result = await service.AddUserLikeBusiness(dto);
 

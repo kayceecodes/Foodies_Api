@@ -4,6 +4,11 @@ using foodies_api;
 using foodies_api.Constants;
 using foodies_api.Data;
 using foodies_api.Endpoints;
+using foodies_api.Interfaces.Repositories;
+using foodies_api.Interfaces.Services;
+using foodies_api.Models;
+using foodies_api.Repositories;
+using foodies_api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -23,6 +28,8 @@ builder.Services.AddAutoMapper(typeof(UserProfile), typeof(Business));
 // builder.Services.AddDbContext<UserRolesContext>(opt => 
 //     opt.UseInMemoryDatabase("ProductsDb")
 // ); // For simplicity, using in-memory database
+builder.Services.AddScoped<IUsersLikeBusinessesService, UsersLikeBusinessesService>();
+builder.Services.AddScoped<IUsersLikeBusinessesRepository, UsersLikeBusinessesRepository>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

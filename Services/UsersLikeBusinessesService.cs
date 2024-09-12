@@ -2,12 +2,11 @@ using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Net;
 using AutoMapper;
-using foodies_api.Data;
+using foodies_api.Interfaces.Repositories;
 using foodies_api.Interfaces.Services;
 using foodies_api.Models;
 using foodies_api.Models.Dtos;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace foodies_api.Services;
 
@@ -15,35 +14,33 @@ public class UsersLikeBusinessesService : IUsersLikeBusinessesService
 {
     private IMapper _mapper { get; set; }
     private IUsersLikeBusinessesRepository _repository { get; set; }
-    private ILogger _logger { get; set; }
+    private readonly ILogger<UsersLikeBusinessesService> _logger;
 
-    public UsersLikeBusinessesService(ILogger logger, IMapper mapper, IUsersLikeBussinessesRepository repository) 
+    public UsersLikeBusinessesService(ILogger<UsersLikeBusinessesService> logger, IMapper mapper, IUsersLikeBusinessesRepository repository) 
     {
         _logger = logger;
-        _mapper = mapper;
-        _context = context;
+        _mapper = mapper;;
         _repository = repository;
     }
 
     public async Task<ApiResult<UserLikeBusiness>> AddUserLikeBusiness(UserLikeBusinessDto dto)
     {
         var mapped = _mapper.Map<UserLikeBusiness>(dto);
-        var UserLikeBusiness = await _context.userLikeBusinesses.AddAsync(
-            new UserLikeBusiness() { 
-                UserId = mapped.UserId, 
-                FullName = mapped.FullName, 
-                BusinessId = mapped.BusinessId, 
-                BusinessName = mapped.BusinessName }
-        );
-        
-        return new ApiResult<UserLikeBusiness> { Data = mapped, IsSuccess = true, StatusCode = HttpStatusCode.OK };
+        var result = await _repository.AddUserLikeBusiness(mapped);
+
+        if(result.Success)
+        {
+            return new ApiResult<UserLikeBusiness> { Data = result.Data, IsSuccess = true, StatusCode = HttpStatusCode.OK };
+        }
+        else {
+            _logger.LogError("Could not add to UserLikeBusiness");
+            return new ApiResult<UserLikeBusiness> { IsSuccess = false, ErrorMessages = ["Couldn't add UserLikeBusiness"]};
+        }
     }
-
-    public async Task<ApiResult<UserLikeBusiness>> RemoveUserLikeBusiness(UserLikeBusiness dto)
+    public async Task<ApiResult<UserLikeBusiness>> RemoveUserLikeBusiness(UserLikeBusinessDto dto)
     {
-        var mapped = mapper.Map<GetUserLikeBusinessResponse>(dto).ToList();
-        var UserLikeBusiness = 
+        var mapped = _mapper.Map<UserLikeBusiness>(dto);
 
-        return await new ApiResult<UserLikeBusiness> { Data = mapped, IsSuccess = true, StatusCode = HttpStatusCode.OK };
+        return new ApiResult<UserLikeBusiness> { Data = mapped, IsSuccess = true, StatusCode = HttpStatusCode.OK };
     }
 }
