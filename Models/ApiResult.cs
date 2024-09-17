@@ -8,7 +8,7 @@ public class ApiResult<T>
 {
     public ApiResult()
     {
-        ErrorMessages = new List<string>();
+        ErrorMessages = new List<string>(); 
     }
     public bool IsSuccess { get; set; }
     public T Data { get; set; }

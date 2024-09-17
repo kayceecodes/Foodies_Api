@@ -2,49 +2,44 @@
 services:
   my_app:
     image: kayceecode/foodiesapi
-    build:
-      context: .
-      dockerfile: Dockerfile
-      tags:
-        - kayceecode/foodiesapi
     container_name: foodiesapi_container
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__DefaultConnection=Host=foodiesapidb;Port=5432;Database=foodiesapidb;Username=postgres;PasswordFile=/run/secrets/postgres-passwd
+      ASPNETCORE_ENVIRONMENT: Production
+      # Database connection string using the secret for the password 
+      # (SPLIT into different properties and have it use PasswordFile locate file)
+      ConnectionStrings__DefaultConnection: "Host=foodiesapidb;Port=5432;Database=foodiesapidb;Username=postgres;PasswordFile=/run/secrets/postgres-passwd"
     ports:
-      - "8092:8080"
+      - "8082:8080"
     depends_on:
       - db
+    volumes:
+      - /run/secrets/postgres-passwd:/run/secrets/postgres-passwd
     secrets:
       - postgres-passwd
+
   db:
     image: postgres
-    restart: always
     container_name: foodiesapidb
     environment:
       PGUSER: postgres
-      POSTGRES_PASSWORD_FILE: /run/secrets/postgres-passwd
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres-passwd  # Using the secret for the password
     secrets:
       - postgres-passwd
     volumes:
       - db-data:/var/lib/postgresql/data
-      # - ./secrets/postgres-passwd.txt:/run/secrets/postgres-passwd
+      - ./secrets/postgres-passwd.txt:/run/secrets/postgres-passwd
+    ports:
+      - "5430:5432"
+    restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
       interval: 1s
       timeout: 5s
       retries: 10
-    ports:
-    - "5430:5432"
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8081:8080
 
 volumes:
-  db-data: 
+  db-data:
 
 secrets:
   postgres-passwd:
-    external: true
+    file: ./postgres-passwd.txt

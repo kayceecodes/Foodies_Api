@@ -12,7 +12,7 @@ public class Authentication(IConfiguration config)
 
     public string CreateAccessToken(User user)
     {
-        string publicKey = _config["PublicKey"];
+        string publicKey = _config["JwtSettings:Key"];
         var key = Encoding.UTF8.GetBytes(publicKey);
         var sKey = new SymmetricSecurityKey(key);
         var SignedCredentials = new SigningCredentials(sKey, SecurityAlgorithms.HmacSha256Signature);
@@ -22,14 +22,15 @@ public class Authentication(IConfiguration config)
             new Claim(JwtRegisteredClaimNames.Sub, user.Username),
             new Claim(JwtRegisteredClaimNames.Email, user.Email)
         });
-        var expires = DateTime.UtcNow.AddHours(1);
+        var expires = DateTime.UtcNow.AddHours(2);
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = claims,
             Expires = expires,
-            Issuer = "MasterBlazor",
-            SigningCredentials = SignedCredentials
+            Issuer = "Kayceecode",
+            Audience = _config["JwtSettings:Audience"],
+            SigningCredentials = SignedCredentials,
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();

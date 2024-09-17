@@ -16,11 +16,10 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
+// temporarily hiding password in user-secrets
 var conn = builder.Configuration.GetConnectionString("DefaultConnection");
 var dbPassword = configuration["DbPassword"];
-
-// temporarily hiding password in user-secrets
-// conn = $"User ID=postgres;Password={dbPassword};Host=localhost;Port=5430;Database=foodiesapidb;Pooling=true;";
+conn += dbPassword;
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(conn));
 builder.Services.AddAutoMapper(typeof(UserProfile), typeof(Business));
@@ -28,7 +27,9 @@ builder.Services.AddAutoMapper(typeof(UserProfile), typeof(Business));
 // builder.Services.AddDbContext<UserRolesContext>(opt => 
 //     opt.UseInMemoryDatabase("ProductsDb")
 // ); // For simplicity, using in-memory database
-builder.Services.AddScoped<IUsersLikeBusinessesService, UsersLikeBusinessesService>();
+
+builder.Services.AddSingleton<IUsersLikeBusinessesService, UsersLikeBusinessesService>();
+
 builder.Services.AddScoped<IUsersLikeBusinessesRepository, UsersLikeBusinessesRepository>();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -61,7 +62,7 @@ builder.Services.AddAuthentication("Bearer")
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"])),
             ValidateIssuer = true,
-            ValidateAudience = true,
+            ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
         };
