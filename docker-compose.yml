@@ -1,15 +1,34 @@
 #      - ConnectionStrings__DefaultConnection=User ID=postgres;Password=postgres;Server=app_db;Port=5432;Database=FoodiesApiDb; IntegratedSecurity=true;Pooling=true;
-services: 
+services:
+  my_app:
+    image: kayceecode/foodiesapi
+    build:
+      context: .
+      dockerfile: Dockerfile
+      tags:
+        - kayceecode/foodiesapi
+    container_name: foodiesapi_container
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Host=foodiesapidb;Port=5432;Database=foodiesapidb;Username=postgres;PasswordFile=/run/secrets/postgres-passwd
+    ports:
+      - "8092:8080"
+    depends_on:
+      - db
+    secrets:
+      - postgres-passwd
   db:
     image: postgres
     restart: always
+    container_name: foodiesapidb
     environment:
       PGUSER: postgres
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres-passwd
     secrets:
       - postgres-passwd
     volumes:
-      - db-data:/var/lib/postgresql/data  
+      - db-data:/var/lib/postgresql/data
+      # - ./secrets/postgres-passwd.txt:/run/secrets/postgres-passwd
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
       interval: 1s
@@ -21,11 +40,11 @@ services:
     image: adminer
     restart: always
     ports:
-      - 8080:8080
+      - 8081:8080
 
 volumes:
   db-data: 
 
 secrets:
   postgres-passwd:
-    file: ./postgres_passwd.txt
+    external: true

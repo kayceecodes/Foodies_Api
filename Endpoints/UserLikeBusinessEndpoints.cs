@@ -2,7 +2,8 @@ using AutoMapper;
 using foodies_api.Models;
 using foodies_api.Models.Dtos;
 using foodies_api.Services;
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace foodies_api.Endpoints;
@@ -12,7 +13,7 @@ public static class UserLikeBusinessEndpoints
     public static void ConfigurationUserLikeBusinessEndpoints(this WebApplication app) 
     {
         // Uses Search object with propeerties used in Yelp's API
-        app.MapPost("/api/userlikebusiness/add/{dto}", async Task<IResult> ([FromServices] IMapper mapper, [AsParameters] UserLikeBusinessDto dto) =>
+        app.MapPost("/api/userlikebusiness/add/", [Authorize] async Task<IResult>  ([FromServices] IMapper mapper, [FromBody] UserLikeBusinessDto dto) =>
         {
             var service = app.Services.GetRequiredService<UsersLikeBusinessesService>();
 
@@ -28,8 +29,12 @@ public static class UserLikeBusinessEndpoints
 
         }).WithName("GetUserLikeBusinesssBySearchTerms").Accepts<UserLikeBusinessDto>("application/json")
         .Produces<ApiResult<List<UserLikeBusinessDto>>>(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status500InternalServerError)
-        .RequireAuthorization();
-    }
+        .Produces(StatusCodes.Status500InternalServerError);
 
+        // app.MapGet("/api/protected", [Authorize(AuthenticationSchemes=JwtBearerDefaults.AuthenticationScheme)] () =>
+        app.MapGet("/api/protected",  () =>
+        {
+            return Results.Ok("You are authorized!");
+        });
+    }
 }

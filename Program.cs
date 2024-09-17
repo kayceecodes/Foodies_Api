@@ -20,7 +20,7 @@ var conn = builder.Configuration.GetConnectionString("DefaultConnection");
 var dbPassword = configuration["DbPassword"];
 
 // temporarily hiding password in user-secrets
-conn = $"User ID=postgres;Password={dbPassword};Host=localhost;Port=5430;Database=foodiesapidb;Pooling=true;";
+// conn = $"User ID=postgres;Password={dbPassword};Host=localhost;Port=5430;Database=foodiesapidb;Pooling=true;";
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(conn));
 builder.Services.AddAutoMapper(typeof(UserProfile), typeof(Business));
