@@ -2,6 +2,7 @@ using foodies_api.Data;
 using foodies_api.Interfaces.Repositories;
 using foodies_api.Models;
 using foodies_api.Models.Dtos.Responses;
+using Microsoft.EntityFrameworkCore;
 
 namespace foodies_api.Repositories;
 
@@ -13,7 +14,7 @@ public class UsersLikeBusinessesRepository : IUsersLikeBusinessesRepository
     {
         _context = context;
     }
-    public async Task<RepositoryResponse<UserLikeBusiness>> AddUserLikeBusiness(UserLikeBusiness userLike) 
+    public async Task<RepositoryResponse<UserLikeBusiness>> AddUserLikes(UserLikeBusiness userLike) 
     {
         try {
                 var result = await _context.userLikeBusinesses.AddAsync(userLike);
@@ -24,7 +25,7 @@ public class UsersLikeBusinessesRepository : IUsersLikeBusinessesRepository
         }
     }
 
-    public async Task<RepositoryResponse<UserLikeBusiness>> RemoveUserLikeBusiness(int userLikeId) 
+    public async Task<RepositoryResponse<UserLikeBusiness>> RemoveUserLikes(int userLikeId) 
     {
         var userLike = await _context.userLikeBusinesses.FindAsync(userLikeId);
         
@@ -32,7 +33,7 @@ public class UsersLikeBusinessesRepository : IUsersLikeBusinessesRepository
            return new RepositoryResponse<UserLikeBusiness>() { 
                 Success = true, 
                 Exception = new KeyNotFoundException($"Entity of type UserLikeBusiness could not be found.")
-            };            
+        };            
 
         try {
                 var result =  _context.userLikeBusinesses.Remove(userLike); 
@@ -47,4 +48,30 @@ public class UsersLikeBusinessesRepository : IUsersLikeBusinessesRepository
         } catch (Exception ex) {
                 return new RepositoryResponse<UserLikeBusiness>() { Success = false, Exception = ex };
         }
-    }}
+    }
+    
+    public async Task<RepositoryResponse<List<UserLikeBusiness>>> GetUserLikes(Guid userId) 
+    {
+        try {
+                var user = await _context.Users.FindAsync(userId);
+
+                if (user == null)
+                    throw new KeyNotFoundException("User not found");
+
+                var userLikes = await _context.userLikeBusinesses
+                    .Where(u => u.UserId == userId)
+                    .ToListAsync();                
+
+                return new RepositoryResponse<List<UserLikeBusiness>>() {
+                     Success = true, 
+                     Data = userLikes
+                };
+
+        } catch (Exception ex) {
+                return new RepositoryResponse<List<UserLikeBusiness>>() { 
+                    Success = false, 
+                    Exception = ex 
+                };
+        }
+    }
+}

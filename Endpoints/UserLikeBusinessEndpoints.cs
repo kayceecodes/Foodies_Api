@@ -1,4 +1,5 @@
 using AutoMapper;
+using foodies_api.Interfaces.Services;
 using foodies_api.Models;
 using foodies_api.Models.Dtos;
 using foodies_api.Services;
@@ -12,47 +13,43 @@ public static class UserLikeBusinessEndpoints
 {
     public static void ConfigurationUserLikeBusinessEndpoints(this WebApplication app) 
     {
-        // Uses Search object with propeerties used in Yelp's API
-        app.MapPost("/api/userslikebusinesses/add/", [Authorize] async Task<IResult>  ([FromServices] IMapper mapper, [FromBody] UserLikeBusinessDto dto) =>
+        app.MapPost("/api/userslikebusinesses/", [Authorize] async Task<IResult>  ([FromServices] IMapper mapper, [FromBody] UserLikeBusinessDto dto, IUsersLikeBusinessesService service) =>
         {
-            var service = app.Services.GetRequiredService<UsersLikeBusinessesService>();
+            ApiResult<UserLikeBusiness> result = await service.AddUserLikes(dto);
 
-            ApiResult<UserLikeBusiness> result = await service.AddUserLikeBusiness(dto);
+            if (!result.IsSuccess)
+                return TypedResults.BadRequest(result.ErrorMessages);
 
-            // if (result.IsSuccess)
-            // {
-            //     var mapped = result.Data.Select(x => mapper.Map<GetBusinessResponse>(x)).ToList();
-            //     return TypedResults.Ok(mapped);
-            // }
             return TypedResults.Ok("Authorized Call");
-            // return TypedResults.BadRequest(result.ErrorMessages);
 
         }).WithName("AddUsersLikeBusinessses").Accepts<UserLikeBusinessDto>("application/json")
         .Produces<ApiResult<List<UserLikeBusinessDto>>>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status500InternalServerError);
 
-        // Uses Search object with propeerties used in Yelp's API
-        app.MapPost("/api/userslikebusinesses/remove/", [Authorize] async Task<IResult>  ([FromServices] IMapper mapper, [FromBody] UserLikeBusinessDto dto) =>
+        app.MapDelete("/api/userslikebusinesses/", [Authorize] async Task<IResult>  ([FromServices] IMapper mapper, [FromBody] UserLikeBusinessDto dto, IUsersLikeBusinessesService service) =>
         {
-            var service = app.Services.GetRequiredService<UsersLikeBusinessesService>();
+            ApiResult<UserLikeBusiness> result = await service.RemoveUserLikes(dto);
 
-            ApiResult<UserLikeBusiness> result = await service.RemoveUserLikeBusiness(dto);
-
-            // if (result.IsSuccess)
-            // {
-            //     var mapped = result.Data.Select(x => mapper.Map<GetBusinessResponse>(x)).ToList();
-            //     return TypedResults.Ok(mapped);
-            // }
-            return TypedResults.Ok("Authorized Call");
-            // return TypedResults.BadRequest(result.ErrorMessages);
+            if (!result.IsSuccess)
+                return TypedResults.BadRequest(result.ErrorMessages);
+    
+            return TypedResults.Ok<ApiResult<UserLikeBusiness>>(result);
 
         }).WithName("RemoveUsersLikeBusinessse").Accepts<UserLikeBusinessDto>("application/json")
         .Produces<ApiResult<List<UserLikeBusinessDto>>>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status500InternalServerError);
 
-        app.MapGet("/api/protected", [Authorize(AuthenticationSchemes=JwtBearerDefaults.AuthenticationScheme)] () =>
+        app.MapGet("/api/userslikebusinesses/", [Authorize] async Task<IResult> ([FromServices] IMapper mapper, [FromBody] UserDto dto, IUsersLikeBusinessesService service) =>
         {
-            return Results.Ok("You are authorized!");
-        });
+            ApiResult<List<UserLikeBusiness>> result = await service.GetUserLikes(dto);
+
+            if(!result.IsSuccess)
+                return TypedResults.BadRequest(result.ErrorMessages);
+
+            return TypedResults.Ok<ApiResult<List<UserLikeBusiness>>>(result);
+
+        }).WithName("GetUserLikeBusinesses").Accepts<UserLikeBusinessDto>("application/json")
+        .Produces<ApiResult<List<UserLikeBusinessDto>>>(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status500InternalServerError);    
     }
 }

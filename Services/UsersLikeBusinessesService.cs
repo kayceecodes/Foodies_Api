@@ -23,10 +23,10 @@ public class UsersLikeBusinessesService : IUsersLikeBusinessesService
         _repository = repository;
     }
 
-    public async Task<ApiResult<UserLikeBusiness>> AddUserLikeBusiness(UserLikeBusinessDto dto)
+    public async Task<ApiResult<UserLikeBusiness>> AddUserLikes(UserLikeBusinessDto dto)
     {
         var mapped = _mapper.Map<UserLikeBusiness>(dto);
-        var result = await _repository.AddUserLikeBusiness(mapped);
+        var result = await _repository.AddUserLikes(mapped);
 
         if(result.Success)
         {
@@ -37,10 +37,35 @@ public class UsersLikeBusinessesService : IUsersLikeBusinessesService
             return new ApiResult<UserLikeBusiness> { IsSuccess = false, ErrorMessages = ["Couldn't add UserLikeBusiness"]};
         }
     }
-    public async Task<ApiResult<UserLikeBusiness>> RemoveUserLikeBusiness(UserLikeBusinessDto dto)
+    public async Task<ApiResult<UserLikeBusiness>> RemoveUserLikes(UserLikeBusinessDto dto)
     {
-        var mapped = _mapper.Map<UserLikeBusiness>(dto);
+        var userLikeBusiness = _mapper.Map<UserLikeBusiness>(dto);
 
-        return new ApiResult<UserLikeBusiness> { Data = mapped, IsSuccess = true, StatusCode = HttpStatusCode.OK };
+        var result = await _repository.RemoveUserLikes(userLikeBusiness.Id);
+
+        if(!result.Success)
+            return new ApiResult<UserLikeBusiness> 
+            { 
+                IsSuccess = false, 
+                StatusCode = HttpStatusCode.BadRequest, 
+                ErrorMessages = ["Coundn't get any UserLikeBusinesses"] 
+            };
+
+        return new ApiResult<UserLikeBusiness> { Data = result.Data, IsSuccess = true, StatusCode = HttpStatusCode.OK };
+    }
+
+    public async Task<ApiResult<List<UserLikeBusiness>>> GetUserLikes(UserDto userDto)
+    {
+        var result = await _repository.GetUserLikes(userDto.Id);
+
+        if(!result.Success)
+            return new ApiResult<List<UserLikeBusiness>> 
+            { 
+                IsSuccess = false, 
+                StatusCode = HttpStatusCode.BadRequest, 
+                ErrorMessages = ["Coundn't get any UserLikeBusinesses"] 
+            };
+
+        return new ApiResult<List<UserLikeBusiness>> { Data = result.Data, IsSuccess = true, StatusCode = HttpStatusCode.OK };
     }
 }

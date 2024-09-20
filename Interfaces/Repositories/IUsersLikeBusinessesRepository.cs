@@ -7,7 +7,9 @@ namespace foodies_api.Interfaces.Repositories;
 
 public interface IUsersLikeBusinessesRepository
 {
-    public Task<RepositoryResponse<UserLikeBusiness>> AddUserLikeBusiness(UserLikeBusiness userLikeBusiness);
+    public Task<RepositoryResponse<UserLikeBusiness>> AddUserLikes(UserLikeBusiness userLikeBusiness);
    
-    public Task<RepositoryResponse<UserLikeBusiness>> RemoveUserLikeBusiness(int id);
+    public Task<RepositoryResponse<UserLikeBusiness>> RemoveUserLikes(int userLikeBusinessId);
+    
+    public Task<RepositoryResponse<List<UserLikeBusiness>>> GetUserLikes(Guid userId);
 }

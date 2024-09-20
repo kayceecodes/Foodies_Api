@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using foodies_api.Models.Dtos.Yelp;
-
+using foodies_api.Models;
 [NotMapped]
 public class Business
 {
@@ -17,4 +16,5 @@ public class Business
     public string State { get; set; }
     public string ZipCode { get; set; }
     public string Price { get; set; }
+    public List<User> Users { get; set; }
 }

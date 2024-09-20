@@ -6,7 +6,6 @@ using foodies_api.Data;
 using foodies_api.Endpoints;
 using foodies_api.Interfaces.Repositories;
 using foodies_api.Interfaces.Services;
-using foodies_api.Models;
 using foodies_api.Repositories;
 using foodies_api.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -28,9 +27,8 @@ builder.Services.AddAutoMapper(typeof(UserProfile), typeof(Business));
 //     opt.UseInMemoryDatabase("ProductsDb")
 // ); // For simplicity, using in-memory database
 
-builder.Services.AddSingleton<IUsersLikeBusinessesService, UsersLikeBusinessesService>();
-
 builder.Services.AddScoped<IUsersLikeBusinessesRepository, UsersLikeBusinessesRepository>();
+builder.Services.AddScoped<IUsersLikeBusinessesService, UsersLikeBusinessesService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -67,6 +65,7 @@ builder.Services.AddAuthentication("Bearer")
             ValidateIssuerSigningKey = true,
         };
     });
+    
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(Identity.AdminUserPolicyName, p =>
