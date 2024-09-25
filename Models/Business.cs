@@ -1,8 +1,13 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using foodies_api.Models;
-[NotMapped]
+
+
 public class Business
 {
+    [Key]
+    public string Id { get; set; }
+    public string ExternalId { get; set; }
     public string Alias { get; set; }
     public string Name { get; set; }
     public string URL { get; set; }
@@ -16,5 +21,5 @@ public class Business
     public string State { get; set; }
     public string ZipCode { get; set; }
     public string Price { get; set; }
-    public List<User> Users { get; set; }
+    public virtual List<UserLikeBusiness> UserLikeBusinesses { get; set; }
 }

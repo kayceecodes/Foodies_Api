@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using foodies_api.Data;
@@ -12,9 +13,11 @@ using foodies_api.Data;
 namespace foodies_api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240921234443_ExternalIdAndIntIdBusiness")]
+    partial class ExternalIdAndIntIdBusiness
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,8 +28,11 @@ namespace foodies_api.Migrations
 
             modelBuilder.Entity("Business", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Alias")
                         .HasColumnType("text");
@@ -67,12 +73,32 @@ namespace foodies_api.Migrations
                     b.Property<string>("URL")
                         .HasColumnType("text");
 
+                    b.Property<int?>("UserLikeBusinessId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("ZipCode")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserLikeBusinessId");
+
                     b.ToTable("Businesses");
+                });
+
+            modelBuilder.Entity("BusinessUser", b =>
+                {
+                    b.Property<int>("BusinessesId")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UsersId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("BusinessesId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("BusinessUser");
                 });
 
             modelBuilder.Entity("foodies_api.Models.User", b =>
@@ -93,18 +119,26 @@ namespace foodies_api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int?>("UserLikeBusinessId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Username")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserLikeBusinessId");
 
                     b.ToTable("Users");
                 });
 
             modelBuilder.Entity("foodies_api.Models.UserLikeBusiness", b =>
                 {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("BusinessId")
                         .HasColumnType("text");
@@ -115,40 +149,48 @@ namespace foodies_api.Migrations
                     b.Property<string>("FullName")
                         .HasColumnType("text");
 
-                    b.HasKey("UserId", "BusinessId");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
 
-                    b.HasIndex("BusinessId");
+                    b.HasKey("Id");
 
-                    b.ToTable("UserLikeBusinesses");
-                });
-
-            modelBuilder.Entity("foodies_api.Models.UserLikeBusiness", b =>
-                {
-                    b.HasOne("Business", "Business")
-                        .WithMany("UserLikeBusinesses")
-                        .HasForeignKey("BusinessId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("foodies_api.Models.User", "User")
-                        .WithMany("UserLikeBusinesses")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Business");
-
-                    b.Navigation("User");
+                    b.ToTable("userLikeBusinesses");
                 });
 
             modelBuilder.Entity("Business", b =>
                 {
-                    b.Navigation("UserLikeBusinesses");
+                    b.HasOne("foodies_api.Models.UserLikeBusiness", null)
+                        .WithMany("Businesses")
+                        .HasForeignKey("UserLikeBusinessId");
+                });
+
+            modelBuilder.Entity("BusinessUser", b =>
+                {
+                    b.HasOne("Business", null)
+                        .WithMany()
+                        .HasForeignKey("BusinessesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("foodies_api.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("foodies_api.Models.User", b =>
                 {
-                    b.Navigation("UserLikeBusinesses");
+                    b.HasOne("foodies_api.Models.UserLikeBusiness", null)
+                        .WithMany("Users")
+                        .HasForeignKey("UserLikeBusinessId");
+                });
+
+            modelBuilder.Entity("foodies_api.Models.UserLikeBusiness", b =>
+                {
+                    b.Navigation("Businesses");
+
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

@@ -17,58 +17,64 @@ public class UsersLikeBusinessesRepository : IUsersLikeBusinessesRepository
     public async Task<RepositoryResponse<UserLikeBusiness>> AddUserLikes(UserLikeBusiness userLike) 
     {
         try {
-                var result = await _context.userLikeBusinesses.AddAsync(userLike);
+                var result = await _context.UserLikeBusinesses.AddAsync(userLike);
                 return new RepositoryResponse<UserLikeBusiness>() { Success = true, Data = userLike, Exception = null };
-
-        } catch (Exception ex) {
+        } 
+        catch (Exception ex) 
+        {
                 return new RepositoryResponse<UserLikeBusiness>() { Success = false, Exception = ex };
         }
     }
 
-    public async Task<RepositoryResponse<UserLikeBusiness>> RemoveUserLikes(int userLikeId) 
-    {
-        var userLike = await _context.userLikeBusinesses.FindAsync(userLikeId);
-        
+    public async Task<RepositoryResponse<UserLikeBusiness>> RemoveUserLikes(UserLikeBusiness userLike) 
+    { 
         if(userLike == null)
-           return new RepositoryResponse<UserLikeBusiness>() { 
+           return new RepositoryResponse<UserLikeBusiness>() 
+        { 
                 Success = true, 
                 Exception = new KeyNotFoundException($"Entity of type UserLikeBusiness could not be found.")
         };            
 
         try {
-                var result =  _context.userLikeBusinesses.Remove(userLike); 
+                var result =  _context.UserLikeBusinesses.Remove(userLike); 
                 await _context.SaveChangesAsync();
-                return new RepositoryResponse<UserLikeBusiness>() {
+                return new RepositoryResponse<UserLikeBusiness>() 
+                {
                      Success = true, 
                      Exception = null, 
                      Data = userLike,
                      Message = $"Userlikebusiness {userLike.FullName}, {userLike.BusinessName} deleted." 
                 };
 
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) 
+        {
                 return new RepositoryResponse<UserLikeBusiness>() { Success = false, Exception = ex };
         }
     }
     
-    public async Task<RepositoryResponse<List<UserLikeBusiness>>> GetUserLikes(Guid userId) 
+    public async Task<RepositoryResponse<List<UserLikeBusiness>>> GetUserLikes(string username) 
     {
-        try {
-                var user = await _context.Users.FindAsync(userId);
-
-                if (user == null)
-                    throw new KeyNotFoundException("User not found");
-
-                var userLikes = await _context.userLikeBusinesses
-                    .Where(u => u.UserId == userId)
+        var user = await _context.Users.FindAsync(username) ??
+            throw new KeyNotFoundException("User not found by user name");
+        
+        try
+        {
+                var userLikes = await _context.UserLikeBusinesses
+                    .Where(u => u.UserId == user.Id)
                     .ToListAsync();                
 
-                return new RepositoryResponse<List<UserLikeBusiness>>() {
+                return new RepositoryResponse<List<UserLikeBusiness>>() 
+                {
                      Success = true, 
                      Data = userLikes
                 };
 
-        } catch (Exception ex) {
-                return new RepositoryResponse<List<UserLikeBusiness>>() { 
+        } 
+        catch (Exception ex) 
+        {
+                return new RepositoryResponse<List<UserLikeBusiness>>() 
+                { 
                     Success = false, 
                     Exception = ex 
                 };
