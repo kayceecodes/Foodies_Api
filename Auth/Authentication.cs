@@ -19,11 +19,12 @@ public class Authentication(IConfiguration config)
 
         var claims = new ClaimsIdentity(new []
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Username),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email)
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Email, user.Email),
+            new Claim(JwtRegisteredClaimNames.UniqueName, user.Username),
         });
-        var expires = DateTime.UtcNow.AddHours(2);
-
+        
+        var expires = DateTime.UtcNow.AddMonths(1);
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = claims,

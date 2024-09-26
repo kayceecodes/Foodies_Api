@@ -1,6 +1,8 @@
+using System.Security.Claims;
 using foodies_api.Data;
 using foodies_api.Interfaces.Repositories;
 using foodies_api.Models;
+using foodies_api.Models.Dtos;
 using foodies_api.Models.Dtos.Responses;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,14 +28,17 @@ public class UsersLikeBusinessesRepository : IUsersLikeBusinessesRepository
         }
     }
 
-    public async Task<RepositoryResponse<UserLikeBusiness>> RemoveUserLikes(UserLikeBusiness userLike) 
+    public async Task<RepositoryResponse<UserLikeBusiness>> RemoveUserLikes(Guid userId, string businessId) 
     { 
+        
+        UserLikeBusiness userLike = await _context.UserLikeBusinesses.FindAsync(userId, businessId);
+        
         if(userLike == null)
            return new RepositoryResponse<UserLikeBusiness>() 
-        { 
-                Success = true, 
-                Exception = new KeyNotFoundException($"Entity of type UserLikeBusiness could not be found.")
-        };            
+            { 
+                    Success = true, 
+                    Exception = new KeyNotFoundException($"Entity of type UserLikeBusiness could not be found.")
+            };            
 
         try {
                 var result =  _context.UserLikeBusinesses.Remove(userLike); 
@@ -53,15 +58,15 @@ public class UsersLikeBusinessesRepository : IUsersLikeBusinessesRepository
         }
     }
     
-    public async Task<RepositoryResponse<List<UserLikeBusiness>>> GetUserLikes(string username) 
+    public async Task<RepositoryResponse<List<UserLikeBusiness>>> GetUserLikesByUserId(Guid userId) 
     {
-        var user = await _context.Users.FindAsync(username) ??
+        var user = await _context.Users.FindAsync(userId) ??
             throw new KeyNotFoundException("User not found by user name");
         
         try
         {
                 var userLikes = await _context.UserLikeBusinesses
-                    .Where(u => u.UserId == user.Id)
+                    .Where(ub => ub.User.Id.Equals(userId))
                     .ToListAsync();                
 
                 return new RepositoryResponse<List<UserLikeBusiness>>() 

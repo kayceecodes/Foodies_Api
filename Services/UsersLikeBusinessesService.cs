@@ -39,9 +39,7 @@ public class UsersLikeBusinessesService : IUsersLikeBusinessesService
     }
     public async Task<ApiResult<UserLikeBusiness>> RemoveUserLikes(UserLikeBusinessDto dto)
     {
-        var userLikeBusiness = _mapper.Map<UserLikeBusiness>(dto);
-
-        var result = await _repository.RemoveUserLikes(userLikeBusiness);
+        var result = await _repository.RemoveUserLikes(dto.UserId, dto.BusinessId);
 
         if(!result.Success)
             return new ApiResult<UserLikeBusiness> 
@@ -54,9 +52,9 @@ public class UsersLikeBusinessesService : IUsersLikeBusinessesService
         return new ApiResult<UserLikeBusiness> { Data = result.Data, IsSuccess = true, StatusCode = HttpStatusCode.OK };
     }
 
-    public async Task<ApiResult<List<UserLikeBusiness>>> GetUserLikes(UserDto userDto)
+    public async Task<ApiResult<List<UserLikeBusiness>>> GetUserLikesByUserId(Guid userId)
     {
-        var result = await _repository.GetUserLikes(userDto.Username);
+        var result = await _repository.GetUserLikesByUserId(userId);
 
         if(!result.Success)
             return new ApiResult<List<UserLikeBusiness>> 
