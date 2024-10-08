@@ -13,8 +13,8 @@ using foodies_api.Data;
 namespace foodies_api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240922202045_UserLikeBusinessCorectedNavProperties")]
-    partial class UserLikeBusinessCorectedNavProperties
+    [Migration("20240926163735_intial")]
+    partial class intial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

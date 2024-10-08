@@ -20,6 +20,8 @@ public class UsersLikeBusinessesRepository : IUsersLikeBusinessesRepository
     {
         try {
                 var result = await _context.UserLikeBusinesses.AddAsync(userLike);
+                await _context.SaveChangesAsync();
+                
                 return new RepositoryResponse<UserLikeBusiness>() { Success = true, Data = userLike, Exception = null };
         } 
         catch (Exception ex) 
