@@ -1,4 +1,5 @@
 using System.Net;
+using Newtonsoft.Json;
 using System.Security.Claims;
 using AutoMapper;
 using foodies_api.Interfaces.Services;
@@ -7,6 +8,7 @@ using foodies_api.Models.Dtos;
 using foodies_api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,11 +18,18 @@ public static class UserLikeBusinessEndpoints
 {
     public static void ConfigurationUserLikeBusinessEndpoints(this WebApplication app) 
     {
-        app.MapPost("/api/userlikebusinesses/", [Authorize] async Task<IResult>  ([FromServices] IMapper mapper, [FromBody] UserLikeBusinessDto dto, IUsersLikeBusinessesService service, HttpClient httpClient) =>
+        app.MapPost("/api/userlikebusinesses/", [Authorize] async Task<IResult>  ([FromServices] IMapper mapper, [FromBody] UserLikeBusinessDto dto, IUsersLikeBusinessesService service, HttpContext httpContext, HttpClient httpClient) =>
         {
-            // httpClient.GetAsync();
+            var yelpResult = await httpClient.GetAsync(httpClient.BaseAddress + "/businesses/" + dto.BusinessId);
+            var businessId = yelpResult.IsSuccessStatusCode ? JsonConvert.DeserializeObject<GetBusinessResponse>(await yelpResult.Content.ReadAsStringAsync()).Id : String.Empty;
 
-            ApiResult<UserLikeBusiness> result = await service.AddUserLikes(dto);
+            
+            ApiResult<UserLikeBusiness> result = await service.AddUserLikes(
+                new UserLikeBusinessDto() {
+                    UserId = Guid.Parse(httpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value),
+                    BusinessId = businessId
+                }
+            );
 
             if (!result.IsSuccess)
                 return TypedResults.BadRequest(result.ErrorMessages);
