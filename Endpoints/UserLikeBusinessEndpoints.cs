@@ -16,8 +16,10 @@ public static class UserLikeBusinessEndpoints
 {
     public static void ConfigurationUserLikeBusinessEndpoints(this WebApplication app) 
     {
-        app.MapPost("/api/userlikebusinesses/", [Authorize] async Task<IResult>  ([FromServices] IMapper mapper, [FromBody] UserLikeBusinessDto dto, IUsersLikeBusinessesService service) =>
+        app.MapPost("/api/userlikebusinesses/", [Authorize] async Task<IResult>  ([FromServices] IMapper mapper, [FromBody] UserLikeBusinessDto dto, IUsersLikeBusinessesService service, HttpClient httpClient) =>
         {
+            // httpClient.GetAsync();
+
             ApiResult<UserLikeBusiness> result = await service.AddUserLikes(dto);
 
             if (!result.IsSuccess)

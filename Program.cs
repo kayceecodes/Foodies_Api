@@ -50,6 +50,12 @@ builder.Services.AddSwaggerGen(options =>
     options.IncludeXmlComments(xmlPath);
 });
 
+// Configure services
+builder.Services.AddHttpClient("FoodiesYelpService", client => 
+{
+    client.BaseAddress = new Uri(configuration.GetValue<string>("http://localhost:5155"));    
+});
+
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer(options =>
     {
