@@ -18,12 +18,21 @@ public static class UserLikeBusinessEndpoints
 {
     public static void ConfigurationUserLikeBusinessEndpoints(this WebApplication app) 
     {
-        app.MapPost("/api/userlikebusinesses/", [Authorize] async Task<IResult>  ([FromServices] IMapper mapper, [FromBody] UserLikeBusinessDto dto, IUsersLikeBusinessesService service, HttpContext httpContext, HttpClient httpClient) =>
+        app.MapPost("/api/userlikebusinesses/", [Authorize] async Task<IResult>  (
+            [FromServices] IMapper mapper, 
+            [FromBody] UserLikeBusinessDto dto, 
+            IUsersLikeBusinessesService service, 
+            HttpContext httpContext, 
+            IHttpClientFactory clientFactory ) =>
         {
-            var yelpResult = await httpClient.GetAsync(httpClient.BaseAddress + "/businesses/" + dto.BusinessId);
-            var businessId = yelpResult.IsSuccessStatusCode ? JsonConvert.DeserializeObject<GetBusinessResponse>(await yelpResult.Content.ReadAsStringAsync()).Id : String.Empty;
+            var httpClient = clientFactory.CreateClient("FoodiesYelpService"); 
+            var yelpResult = await httpClient.GetAsync(httpClient.BaseAddress + "/business/" + dto.BusinessId);
+        
+            if (!yelpResult.IsSuccessStatusCode)
+                    throw new HttpRequestException("Failed to fetch business details from Foodies-Yelp API");
 
-            
+            var businessId = JsonConvert.DeserializeObject<GetBusinessResponse>(await yelpResult.Content.ReadAsStringAsync()).Id;
+
             ApiResult<UserLikeBusiness> result = await service.AddUserLikes(
                 new UserLikeBusinessDto() {
                     UserId = Guid.Parse(httpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value),

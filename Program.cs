@@ -53,7 +53,7 @@ builder.Services.AddSwaggerGen(options =>
 // Configure services
 builder.Services.AddHttpClient("FoodiesYelpService", client => 
 {
-    client.BaseAddress = new Uri(configuration.GetValue<string>("http://localhost:5155"));    
+    client.BaseAddress = new Uri(configuration.GetValue<string>("BaseAddress"));    
 });
 
 builder.Services.AddAuthentication("Bearer")
@@ -77,6 +77,8 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy(Identity.AdminUserPolicyName, p =>
         p.RequireClaim(Identity.AdminUserClaimName, "true"));
 });
+
+builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
 

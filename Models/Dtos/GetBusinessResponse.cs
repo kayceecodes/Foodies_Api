@@ -4,6 +4,7 @@ namespace foodies_api.Models.Dtos;
 
 public class GetBusinessResponse
 {
+    public string Id { get; set; }
     public string Name { get; set; }
     public string Alias { get; set; }
     public string StreetAddress { get; set; }
