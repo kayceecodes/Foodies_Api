@@ -1,6 +1,6 @@
 using System.Reflection;
 using System.Text;
-using foodies_api;
+using foodies_api.Profiles;
 using foodies_api.Constants;
 using foodies_api.Data;
 using foodies_api.Endpoints;
@@ -21,7 +21,7 @@ var dbPassword = configuration["DbPassword"];
 conn += dbPassword;
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(conn));
-builder.Services.AddAutoMapper(typeof(UserProfile), typeof(Business));
+builder.Services.AddAutoMapper(typeof(UserProfile), typeof(GetBusinessProfile), typeof(PostUserLikeBusinessProfile));
 
 // builder.Services.AddDbContext<UserRolesContext>(opt => 
 //     opt.UseInMemoryDatabase("ProductsDb")
@@ -29,6 +29,10 @@ builder.Services.AddAutoMapper(typeof(UserProfile), typeof(Business));
 
 builder.Services.AddScoped<IUsersLikeBusinessesRepository, UsersLikeBusinessesRepository>();
 builder.Services.AddScoped<IUsersLikeBusinessesService, UsersLikeBusinessesService>();
+builder.Services.AddScoped<IBusinessService, BusinessService>();
+builder.Services.AddScoped<IBusinessRepository, BusinessRepository>();
+builder.Services.AddScoped<IFoodiesYelpService, FoodiesYelpService>();
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

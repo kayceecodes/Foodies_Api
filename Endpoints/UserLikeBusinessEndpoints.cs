@@ -5,7 +5,6 @@ using AutoMapper;
 using foodies_api.Interfaces.Services;
 using foodies_api.Models;
 using foodies_api.Models.Dtos;
-using foodies_api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -18,25 +17,21 @@ public static class UserLikeBusinessEndpoints
 {
     public static void ConfigurationUserLikeBusinessEndpoints(this WebApplication app) 
     {
-        app.MapPost("/api/userlikebusinesses/", [Authorize] async Task<IResult>  (
-            [FromServices] IMapper mapper, 
+        app.MapPost("/api/userlikebusinesses/", [Authorize] async Task<IResult> (
             [FromBody] UserLikeBusinessDto dto, 
-            IUsersLikeBusinessesService service, 
+            IUsersLikeBusinessesService usersLikeService, 
             HttpContext httpContext, 
-            IHttpClientFactory clientFactory ) =>
+            IFoodiesYelpService foodiesYelpService,
+            IBusinessService businessService
+             ) =>
         {
-            var httpClient = clientFactory.CreateClient("FoodiesYelpService"); 
-            var yelpResult = await httpClient.GetAsync(httpClient.BaseAddress + "/business/" + dto.BusinessId);
+            var foodiesYelpResult = await foodiesYelpService.GetBusinessById(dto.BusinessId);
+            await businessService.AddBusiness(foodiesYelpResult.Data);
         
-            if (!yelpResult.IsSuccessStatusCode)
-                    throw new HttpRequestException("Failed to fetch business details from Foodies-Yelp API");
-
-            var businessId = JsonConvert.DeserializeObject<GetBusinessResponse>(await yelpResult.Content.ReadAsStringAsync()).Id;
-
-            ApiResult<UserLikeBusiness> result = await service.AddUserLikes(
+            ApiResult<UserLikeBusiness> result = await usersLikeService.AddUserLikes(
                 new UserLikeBusinessDto() {
                     UserId = Guid.Parse(httpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value),
-                    BusinessId = businessId
+                    BusinessId = foodiesYelpResult.Data.Id
                 }
             );
 
