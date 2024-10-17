@@ -32,7 +32,6 @@ public class UsersLikeBusinessesRepository : IUsersLikeBusinessesRepository
 
     public async Task<RepositoryResponse<UserLikeBusiness>> RemoveUserLikes(Guid userId, string businessId) 
     { 
-        
         UserLikeBusiness userLike = await _context.UserLikeBusinesses.FindAsync(userId, businessId);
         
         if(userLike == null)
@@ -61,15 +60,11 @@ public class UsersLikeBusinessesRepository : IUsersLikeBusinessesRepository
     }
     
     public async Task<RepositoryResponse<List<UserLikeBusiness>>> GetUserLikesByUserId(Guid userId) 
-    {
-        var user = await _context.Users.FindAsync(userId) ??
-            throw new KeyNotFoundException("User not found by user name");
-        
+    {        
         try
-        {
-                
+        {           
                 var userLikes = await _context.UserLikeBusinesses
-                    .Where(ub => ub.User.Id.Equals(userId))
+                    // .Where(ub => ub.User.Id.Equals(userId))
                     .ToListAsync();                
 
                 return new RepositoryResponse<List<UserLikeBusiness>>() 
