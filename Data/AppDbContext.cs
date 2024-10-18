@@ -32,7 +32,5 @@ public class AppDbContext : DbContext
         builder.Entity<UserLikeBusiness>()
             .HasOne<User>(ub => ub.User)
             .WithMany(u => u.UserLikeBusinesses);
-
-        base.OnModelCreating(builder);
     }
 }

@@ -31,7 +31,8 @@ public static class UserLikeBusinessEndpoints
             ApiResult<UserLikeBusiness> result = await usersLikeService.AddUserLikes(
                 new UserLikeBusinessDto() {
                     UserId = Guid.Parse(httpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value),
-                    BusinessId = foodiesYelpResult.Data.Id
+                    BusinessId = foodiesYelpResult.Data.Id,
+                    BusinessName = foodiesYelpResult.Data.Name
                 }
             );
 
