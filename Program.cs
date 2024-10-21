@@ -44,15 +44,15 @@ builder.Services.AddApiVersioning(options =>
     options.ReportApiVersions = true;
 });
 
-builder.Services.AddSwaggerGen(options =>
-{
-     options.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
+// builder.Services.AddSwaggerGen(options =>
+// {
+//      options.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
 
-    // Add support for XML comments
-    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    options.IncludeXmlComments(xmlPath);
-});
+//     // Add support for XML comments
+//     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+//     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+//     options.IncludeXmlComments(xmlPath);
+// });
 
 // Configure services
 builder.Services.AddHttpClient("FoodiesYelpService", client => 

@@ -15,9 +15,10 @@ public class BusinessService : IBusinessService
     private IBusinessRepository _repository { get; set; }
     private readonly ILogger<BusinessService> _logger;
 
-    public BusinessService(IBusinessRepository repository) 
+    public BusinessService(IBusinessRepository repository,  IMapper mapper) 
     {
         _repository = repository;
+        _mapper = mapper;
     }
 
     public async Task<ApiResult<Business>> AddBusiness(GetBusinessResponse business)

@@ -13,8 +13,8 @@ using foodies_api.Data;
 namespace foodies_api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240926163735_intial")]
-    partial class intial
+    [Migration("20241018002900_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,6 +43,9 @@ namespace foodies_api.Migrations
                     b.Property<string>("ExternalId")
                         .HasColumnType("text");
 
+                    b.Property<string>("ImageURL")
+                        .HasColumnType("text");
+
                     b.Property<double>("Latitude")
                         .HasColumnType("double precision");
 
@@ -50,6 +53,9 @@ namespace foodies_api.Migrations
                         .HasColumnType("double precision");
 
                     b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Phone")
                         .HasColumnType("text");
 
                     b.Property<string>("Price")
@@ -70,7 +76,7 @@ namespace foodies_api.Migrations
                     b.Property<string>("URL")
                         .HasColumnType("text");
 
-                    b.Property<string>("ZipCode")
+                    b.Property<string>("Zipcode")
                         .HasColumnType("text");
 
                     b.HasKey("Id");

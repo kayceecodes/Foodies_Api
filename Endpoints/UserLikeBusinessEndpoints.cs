@@ -31,14 +31,16 @@ public static class UserLikeBusinessEndpoints
             ApiResult<UserLikeBusiness> result = await usersLikeService.AddUserLikes(
                 new UserLikeBusinessDto() {
                     UserId = Guid.Parse(httpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value),
-                    BusinessId = foodiesYelpResult.Data.Id
+                    BusinessId = foodiesYelpResult.Data.Id,
+                    BusinessName = foodiesYelpResult.Data.Name,
+                    FullName = httpContext.User.FindFirst(ClaimTypes.Name).Value
                 }
             );
 
             if (!result.IsSuccess)
                 return TypedResults.BadRequest(result.ErrorMessages);
 
-            return TypedResults.Ok("Authorized Call");
+            return TypedResults.Ok($"Added NAME: {result.Data.BusinessName}, ID: {result.Data.BusinessId} to Businesses.");
 
         }).WithName("AddUsersLikeBusinessses").Accepts<UserLikeBusinessDto>("application/json")
         .Produces<ApiResult<List<UserLikeBusinessDto>>>(StatusCodes.Status200OK)

@@ -19,9 +19,10 @@ public class Authentication(IConfiguration config)
 
         var claims = new ClaimsIdentity(new []
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email),
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Email, user.Email),
             new Claim(JwtRegisteredClaimNames.UniqueName, user.Username),
+            new Claim(ClaimTypes.Name, user.FirstAndLastName),
         });
         
         var expires = DateTime.UtcNow.AddMonths(1);

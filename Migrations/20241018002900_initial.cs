@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace foodies_api.Migrations
 {
     /// <inheritdoc />
-    public partial class intial : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,8 +18,9 @@ namespace foodies_api.Migrations
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
                     ExternalId = table.Column<string>(type: "text", nullable: true),
-                    Alias = table.Column<string>(type: "text", nullable: true),
                     Name = table.Column<string>(type: "text", nullable: true),
+                    Alias = table.Column<string>(type: "text", nullable: true),
+                    ImageURL = table.Column<string>(type: "text", nullable: true),
                     URL = table.Column<string>(type: "text", nullable: true),
                     ReviewCount = table.Column<int>(type: "integer", nullable: false),
                     Categories = table.Column<List<string>>(type: "text[]", nullable: true),
@@ -29,8 +30,9 @@ namespace foodies_api.Migrations
                     StreetAddress = table.Column<string>(type: "text", nullable: true),
                     City = table.Column<string>(type: "text", nullable: true),
                     State = table.Column<string>(type: "text", nullable: true),
-                    ZipCode = table.Column<string>(type: "text", nullable: true),
-                    Price = table.Column<string>(type: "text", nullable: true)
+                    Zipcode = table.Column<string>(type: "text", nullable: true),
+                    Price = table.Column<string>(type: "text", nullable: true),
+                    Phone = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
