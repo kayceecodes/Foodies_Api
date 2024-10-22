@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using foodies_api.Models;
 
+namespace foodies_api.Models.Entities;
 
 public class Business
 {

@@ -1,11 +1,12 @@
 using AutoMapper;
 using foodies_api.Auth;
 using foodies_api.Data;
-using foodies_api.Models.Dtos;
+using foodies_api.Models.Dtos.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using foodies_api.Models;
 using System.Net;
+using foodies_api.Models.Entities;
 
 namespace foodies_api.Endpoints;
 
@@ -26,7 +27,7 @@ public static class AuthEndpoints
             
             var Auth = new Authentication(config);
             if(matchedUser == null)
-                return Results.NotFound();
+                return Results.NotFound("User not found.");
             
             var token = Auth.CreateAccessToken(matchedUser);
             var mappedUserDto = mapper.Map<UserDto>(matchedUser);

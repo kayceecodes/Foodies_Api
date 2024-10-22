@@ -3,7 +3,7 @@ using foodies_api.Interfaces.Services;
 using foodies_api.Models;
 using foodies_api.Interfaces.Repositories;
 using System.Net;
-using foodies_api.Models.Dtos;
+using foodies_api.Models.Dtos.Responses;
 
 namespace foodies_api.Services;
 

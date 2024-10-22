@@ -1,6 +1,6 @@
 using System;
 
-namespace foodies_api.Models.Dtos;
+namespace foodies_api.Models.Dtos.Responses;
 
 public class GetUserLikeBusinessResponse
 {

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using foodies_api.Models;
 using System.Collections.Generic;
+using foodies_api.Models.Entities;
 
 namespace foodies_api.Data;
 

@@ -6,6 +6,7 @@ using foodies_api.Interfaces.Repositories;
 using foodies_api.Interfaces.Services;
 using foodies_api.Models;
 using foodies_api.Models.Dtos;
+using foodies_api.Models.Entities;
 using Microsoft.Extensions.Logging;
 
 namespace foodies_api.Services;

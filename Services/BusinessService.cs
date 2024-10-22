@@ -1,11 +1,10 @@
-using System;
 using System.Net;
 using AutoMapper;
 using foodies_api.Interfaces.Repositories;
 using foodies_api.Interfaces.Services;
 using foodies_api.Models;
-using foodies_api.Models.Dtos;
-using Microsoft.AspNetCore.DataProtection.Repositories;
+using foodies_api.Models.Dtos.Responses;
+using foodies_api.Models.Entities;
 
 namespace foodies_api.Services;
 

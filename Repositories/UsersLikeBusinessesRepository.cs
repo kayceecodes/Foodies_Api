@@ -4,6 +4,7 @@ using foodies_api.Interfaces.Repositories;
 using foodies_api.Models;
 using foodies_api.Models.Dtos;
 using foodies_api.Models.Dtos.Responses;
+using foodies_api.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace foodies_api.Repositories;

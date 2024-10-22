@@ -1,7 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using foodies_api.Models;
+using foodies_api.Models.Entities;
 using Microsoft.IdentityModel.Tokens;
 
 namespace foodies_api.Auth;

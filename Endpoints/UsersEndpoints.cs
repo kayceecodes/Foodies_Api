@@ -1,7 +1,8 @@
 using foodies_api.Data;
-using foodies_api.Models.Dtos;
-using Microsoft.AspNetCore.Mvc;
+using foodies_api.Models.Dtos.Auth;
 using foodies_api.Models;
+using Microsoft.AspNetCore.Mvc;
+using foodies_api.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 
