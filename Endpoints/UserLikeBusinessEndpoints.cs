@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using foodies_api.Models.Entities;
+using foodies_api.Models.Dtos.Yelp;
 
 namespace foodies_api.Endpoints;
 
@@ -47,9 +48,14 @@ public static class UserLikeBusinessEndpoints
         .Produces<ApiResult<List<UserLikeBusinessDto>>>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status500InternalServerError);
 
-        app.MapDelete("/api/userlikebusinesses/", [Authorize] async Task<IResult>  ([FromServices] IMapper mapper, [FromBody] UserLikeBusinessDto dto, IUsersLikeBusinessesService service) =>
+        app.MapDelete("/api/userlikebusinesses/{businessId}", [Authorize] async Task<IResult> (
+            string businessId, 
+            HttpContext httpContext,
+            IUsersLikeBusinessesService service) =>
         {
-            ApiResult<UserLikeBusiness> result = await service.RemoveUserLikes(dto);
+            var userId = Guid.Parse(httpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var userLikeBusinessDto = new UserLikeBusinessDto() { UserId = userId, BusinessId = businessId };
+            ApiResult<UserLikeBusiness> result = await service.RemoveUserLikes(userLikeBusinessDto);
 
             if (!result.IsSuccess)
                 return TypedResults.BadRequest(result.ErrorMessages);
@@ -60,7 +66,7 @@ public static class UserLikeBusinessEndpoints
         .Produces<ApiResult<List<UserLikeBusinessDto>>>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status500InternalServerError);
 
-        app.MapGet("/api/userlikebusinesses/", [Authorize] async Task<IResult> ([FromServices] IMapper mapper, HttpContext httpContext, IUsersLikeBusinessesService service) =>
+        app.MapGet("/api/userlikebusinesses/", [Authorize] async Task<IResult> (HttpContext httpContext, IUsersLikeBusinessesService service) =>
         {
             string userId = httpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var userGuid = Guid.Parse(userId);
