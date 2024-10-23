@@ -65,7 +65,7 @@ public class UsersLikeBusinessesRepository : IUsersLikeBusinessesRepository
         try
         {           
                 var userLikes = await _context.UserLikeBusinesses
-                    // .Where(ub => ub.User.Id.Equals(userId))
+                    .Where(ub => ub.User.Id.Equals(userId))
                     .ToListAsync();                
 
                 return new RepositoryResponse<List<UserLikeBusiness>>() 
