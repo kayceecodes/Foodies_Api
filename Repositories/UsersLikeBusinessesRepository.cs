@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using AutoMapper;
 using foodies_api.Data;
 using foodies_api.Interfaces.Repositories;
 using foodies_api.Models;
@@ -9,14 +10,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace foodies_api.Repositories;
 
-public class UsersLikeBusinessesRepository : IUsersLikeBusinessesRepository
+public class UsersLikeBusinessesRepository(AppDbContext _context, ILogger<UserLikeBusiness> _logger, IMapper _mapper) : IUsersLikeBusinessesRepository
 {
-    public AppDbContext _context { get; set; }
-    public ILogger _logger { get; set; }
-    public UsersLikeBusinessesRepository(AppDbContext context)
-    {
-        _context = context;
-    }
+    // public AppDbContext _context { get; set; }
+    // public ILogger _logger { get; set; }
+    // public UsersLikeBusinessesRepository(AppDbContext context, IMapper mapper)
+    // {
+    //     _context = context;
+    //     _mapper = mapper;
+    // }
     public async Task<RepositoryResponse<UserLikeBusiness>> AddUserLikes(UserLikeBusiness userLike) 
     {
         try {
@@ -50,7 +52,7 @@ public class UsersLikeBusinessesRepository : IUsersLikeBusinessesRepository
                      Success = true, 
                      Exception = null, 
                      Data = userLike,
-                     Message = $"Userlikebusiness {userLike.FullName}, {userLike.BusinessName} deleted." 
+                     Message = $"Userlikebusiness {userLike.Username}, from {userLike.BusinessName} deleted." 
                 };
 
         }
@@ -67,7 +69,7 @@ public class UsersLikeBusinessesRepository : IUsersLikeBusinessesRepository
                 var userLikes = await _context.UserLikeBusinesses
                     .Where(ub => ub.User.Id.Equals(userId))
                     .ToListAsync();                
-
+                
                 return new RepositoryResponse<List<UserLikeBusiness>>() 
                 {
                      Success = true, 

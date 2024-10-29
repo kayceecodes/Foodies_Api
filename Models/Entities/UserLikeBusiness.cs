@@ -6,7 +6,7 @@ namespace foodies_api.Models.Entities;
 public class UserLikeBusiness
 {
     public Guid UserId { get; set; }
-    public string FullName { get; set; }
+    public string Username { get; set; }
     public virtual User User { get; set; }
 
     public string BusinessId { get; set; }

@@ -7,7 +7,7 @@ namespace foodies_api.Interfaces.Services;
 
 public interface IUsersLikeBusinessesService
 {
-    public Task<ApiResult<UserLikeBusiness>> AddUserLikes(UserLikeBusinessDto dto);
-    public Task<ApiResult<UserLikeBusiness>> RemoveUserLikes(UserLikeBusinessDto dto);
-    public Task<ApiResult<List<UserLikeBusiness>>> GetUserLikesByUserId(Guid userId);
+    public Task<ApiResult<UserLikeBusinessDto>> AddUserLikes(UserLikeBusinessDto dto);
+    public Task<ApiResult<UserLikeBusinessDto>> RemoveUserLikes(UserLikeBusinessDto dto);
+    public Task<ApiResult<List<UserLikeBusinessDto>>> GetUserLikesByUserId(Guid userId);
 }

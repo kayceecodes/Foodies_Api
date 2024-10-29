@@ -1,17 +1,10 @@
-using System.Net;
-using Newtonsoft.Json;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using AutoMapper;
 using foodies_api.Interfaces.Services;
 using foodies_api.Models;
 using foodies_api.Models.Dtos;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using foodies_api.Models.Entities;
-using foodies_api.Models.Dtos.Yelp;
 
 namespace foodies_api.Endpoints;
 
@@ -30,12 +23,12 @@ public static class UserLikeBusinessEndpoints
             var foodiesYelpResult = await foodiesYelpService.GetBusinessById(dto.BusinessId);
             await businessService.AddBusiness(foodiesYelpResult.Data);
         
-            ApiResult<UserLikeBusiness> result = await usersLikeService.AddUserLikes(
+            ApiResult<UserLikeBusinessDto> result = await usersLikeService.AddUserLikes(
                 new UserLikeBusinessDto() {
                     UserId = Guid.Parse(httpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value),
                     BusinessId = foodiesYelpResult.Data.Id,
                     BusinessName = foodiesYelpResult.Data.Name,
-                    FullName = httpContext.User.FindFirst(ClaimTypes.Name).Value
+                    Username = httpContext.User.FindFirst(JwtRegisteredClaimNames.Name).Value
                 }
             );
 
@@ -55,12 +48,12 @@ public static class UserLikeBusinessEndpoints
         {
             var userId = Guid.Parse(httpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var userLikeBusinessDto = new UserLikeBusinessDto() { UserId = userId, BusinessId = businessId };
-            ApiResult<UserLikeBusiness> result = await service.RemoveUserLikes(userLikeBusinessDto);
+            ApiResult<UserLikeBusinessDto> result = await service.RemoveUserLikes(userLikeBusinessDto);
 
             if (!result.IsSuccess)
                 return TypedResults.BadRequest(result.ErrorMessages);
     
-            return TypedResults.Ok<ApiResult<UserLikeBusiness>>(result);
+            return TypedResults.Ok<ApiResult<UserLikeBusinessDto>>(result);
 
         }).WithName("RemoveUsersLikeBusinessse").Accepts<UserLikeBusinessDto>("application/json")
         .Produces<ApiResult<List<UserLikeBusinessDto>>>(StatusCodes.Status200OK)
@@ -71,12 +64,12 @@ public static class UserLikeBusinessEndpoints
             string userId = httpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var userGuid = Guid.Parse(userId);
             
-            ApiResult<List<UserLikeBusiness>> result = await service.GetUserLikesByUserId(userGuid);
+            ApiResult<List<UserLikeBusinessDto>> result = await service.GetUserLikesByUserId(userGuid);
 
             if(!result.IsSuccess)
                 return TypedResults.BadRequest(result.ErrorMessages);
 
-            return TypedResults.Ok<ApiResult<List<UserLikeBusiness>>>(result);
+            return TypedResults.Ok<ApiResult<List<UserLikeBusinessDto>>>(result);
 
         }).WithName("GetUserLikeBusinesses").Accepts<UserLikeBusinessDto>("application/json")
         .Produces<ApiResult<List<UserLikeBusinessDto>>>(StatusCodes.Status200OK)

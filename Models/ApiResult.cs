@@ -13,6 +13,7 @@ public class ApiResult<T>
     public bool IsSuccess { get; set; }
     public T Data { get; set; }
     public HttpStatusCode StatusCode { get; set; }
+    public string Message { get; set; }
     public List<string>? ErrorMessages { get; set; }
     public Exception Exception { get; set; }
 
@@ -52,15 +53,16 @@ public class ApiResult<T>
         }
 }
 
-public class ApiResult
-{
-    public ApiResult()
-    {
-        ErrorMessages = new List<string>();
-    }
-    public bool IsSuccess { get; set; }
-    public object Data { get; set; }
-    public HttpStatusCode StatusCode { get; set; }
-    public List<string> ErrorMessages { get; set; }
-    public string Exception { get; set; }
-}
+// public class ApiResult
+// {
+//     public ApiResult()
+//     {
+//         ErrorMessages = new List<string>();
+//     }
+//     public bool IsSuccess { get; set; }
+//     public object Data { get; set; }
+//     public HttpStatusCode StatusCode { get; set; }
+//     public string Message { get; set;}
+//     public List<string> ErrorMessages { get; set; }
+//     public string Exception { get; set; }
+// }
