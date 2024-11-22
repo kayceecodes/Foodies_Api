@@ -42,25 +42,27 @@ public class UsersLikeBusinessesService : IUsersLikeBusinessesService
         if(!result.Success)
         {
             var message = $"Coundn't delete {dto.BusinessName} from UserLikeBusinesses";
-            return ApiResult<UserLikeBusinessDto>.Fail(message, HttpStatusCode.BadRequest);
             _logger.LogError(message);
+            return ApiResult<UserLikeBusinessDto>.Fail(message, HttpStatusCode.BadRequest);
         }
 
         return ApiResult<UserLikeBusinessDto>.Pass(dto);
     }
-
     public async Task<ApiResult<List<UserLikeBusinessDto>>> GetUserLikesByUserId(Guid userId)
     {
         var result = await _repository.GetUserLikesByUserId(userId);
         List<UserLikeBusinessDto> dtos = _mapper.Map<List<UserLikeBusinessDto>>(result.Data); 
 
         if(!result.Success)
+        {
+            _logger.LogError("Couldn't get any UserLikeBusinesses");
             return new ApiResult<List<UserLikeBusinessDto>> 
             { 
                 IsSuccess = false, 
                 StatusCode = HttpStatusCode.BadRequest, 
                 ErrorMessages = ["Coundn't get any UserLikeBusinesses"] 
             };
+        }
 
         return new ApiResult<List<UserLikeBusinessDto>> { Data = dtos, IsSuccess = true, StatusCode = HttpStatusCode.OK };
     }

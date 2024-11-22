@@ -14,7 +14,7 @@ public static class AuthEndpoints
 {
     public static void ConfigurationAuthEndpoints(this WebApplication app) 
     {
-        var appGroup = app.MapGroup("/api");
+        var appGroup = app.MapGroup("/api/auth");
         
         // appGroup.MapPost("/user", [Authorize(Policy = Identity.AdminUserPolicyName)] async ([FromServices] IMapper mapper, UserDto dto, AppContext db) =>
         appGroup.MapPost("/login", async ([FromBody] UserDto dto, AppDbContext context, IConfiguration config, IMapper mapper) => 
