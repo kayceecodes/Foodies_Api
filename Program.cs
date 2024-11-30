@@ -15,6 +15,8 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
+var AllowLocalDevelopment = "AllowLocalDevelopment";
+
 // temporarily hiding password in user-secrets
 var conn = builder.Configuration.GetConnectionString("DefaultConnection");
 var dbPassword = configuration["DbPassword"];
@@ -33,9 +35,21 @@ builder.Services.AddScoped<IBusinessService, BusinessService>();
 builder.Services.AddScoped<IBusinessRepository, BusinessRepository>();
 builder.Services.AddScoped<IFoodiesYelpService, FoodiesYelpService>();
 
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: AllowLocalDevelopment,
+                      policy  =>
+                      {
+                          policy.WithOrigins("http://localhost:3000",
+                                              "http://localhost:3001")
+                                .AllowAnyOrigin()
+                                .AllowAnyHeader()
+                                .AllowAnyMethod();
+                      });
+});
 
 builder.Services.AddApiVersioning(options =>
 {
@@ -103,6 +117,6 @@ app.ConfigurationUserEndpoints();
 app.ConfigurationAuthEndpoints();
 app.ConfigurationUserLikeBusinessEndpoints();
 
-// app.UseCors();
+app.UseCors(AllowLocalDevelopment);
 
 app.Run();
