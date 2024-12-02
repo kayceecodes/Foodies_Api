@@ -11,17 +11,11 @@ public class PostUserProfile : Profile
     public PostUserProfile()
     {
         CreateMap<UserDto, User>()
-        .ForMember(dest => dest.FirstAndLastName, src => src.MapFrom(x => x.FirstName + " " + x.LastName))
-        .ForMember(dest => dest.Username, src => src.MapFrom(x => x.Username))
-        .ForMember(dest => dest.Email, src => src.MapFrom(x => x.Email))
-        .ForMember(dest => dest.Password, src => src.MapFrom(x => x.Password));
+        .ForMember(dest => dest.FirstAndLastName, src => src.MapFrom(x => x.FirstName + " " + x.LastName));
 
         CreateMap<User, UserDto>() 
         .ForMember(dest => dest.FirstName, src => src.MapFrom<FirstNameResolver>())
-        .ForMember(dest => dest.LastName, src => src.MapFrom<LastNameResolver>())
-        .ForMember(dest => dest.Username, src => src.MapFrom(x => x.Username))
-        .ForMember(dest => dest.Email, src => src.MapFrom(x => x.Email))
-        .ForMember(dest => dest.Password, src => src.MapFrom(x => x.Password));
+        .ForMember(dest => dest.LastName, src => src.MapFrom<LastNameResolver>());
     }    
 }
 

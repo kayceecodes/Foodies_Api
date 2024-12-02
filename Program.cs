@@ -11,7 +11,7 @@ using foodies_api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -25,10 +25,6 @@ conn += dbPassword;
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(conn));
 builder.Services.AddAutoMapper(typeof(PostUserProfile), typeof(GetBusinessProfile), typeof(PostUserLikeBusinessProfile));
 
-// builder.Services.AddDbContext<UserRolesContext>(opt => 
-//     opt.UseInMemoryDatabase("ProductsDb")
-// ); // For simplicity, using in-memory database
-
 builder.Services.AddScoped<IUsersLikeBusinessesRepository, UsersLikeBusinessesRepository>();
 builder.Services.AddScoped<IUsersLikeBusinessesService, UsersLikeBusinessesService>();
 builder.Services.AddScoped<IBusinessService, BusinessService>();
@@ -37,6 +33,11 @@ builder.Services.AddScoped<IFoodiesYelpService, FoodiesYelpService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDefaultIdentity<IdentityUser>(options => 
+    options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<AppDbContext>();
+
 
 builder.Services.AddCors(options =>
 {
