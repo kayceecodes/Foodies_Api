@@ -27,9 +27,9 @@ public static class UserEndpoints
         .Produces(StatusCodes.Status500InternalServerError)
         .WithOpenApi();
 
-        appGroup.MapDelete("/users/delete/", async ([FromBody] UserDto userDto, AppDbContext context, IConfiguration config) => 
+        appGroup.MapDelete("/users/delete/", async ([FromBody] Guid userId, AppDbContext context, IConfiguration config) => 
         {
-            var user = await context.Users.FindAsync(userDto.Id);
+            var user = await context.Users.FindAsync(userId);
             var result = new ApiResult<User>();
             
             if(user == null)
@@ -53,21 +53,21 @@ public static class UserEndpoints
 
         appGroup.MapPut("/users/update/", async ([FromBody] UserDto userDto, AppDbContext context, IConfiguration config) => 
         {
-            var rowsAffected = await context.Users.Where(u => u.Id == userDto.Id)
-                .ExecuteUpdateAsync(updates => 
-                    updates.SetProperty(u => u.Email, userDto.Email)
-                           .SetProperty(u => u.FirstAndLastName, userDto.FirstName + " " + userDto.LastName)
-                           .SetProperty(u => u.Password, userDto.Password)
-                           .SetProperty(u => u.Username, userDto.Username));
+            // var rowsAffected = await context.Users.Where(u => u.Id == userDto.Id)
+            //     .ExecuteUpdateAsync(updates => 
+            //         updates.SetProperty(u => u.Email, userDto.Email)
+            //                .SetProperty(u => u.FirstAndLastName, userDto.FirstName + " " + userDto.LastName)
+            //                .SetProperty(u => u.Password, userDto.Password)
+            //                .SetProperty(u => u.Username, userDto.Username));
             
-            var result = new ApiResult<UserDto>()
-            {
-                IsSuccess = true,
-                StatusCode = HttpStatusCode.OK,
-                Data = userDto,
-            };
+            // var result = new ApiResult<UserDto>()
+            // {
+            //     IsSuccess = true,
+            //     StatusCode = HttpStatusCode.OK,
+            //     Data = userDto,
+            // };
 
-            return rowsAffected == 0 ? Results.NotFound() : TypedResults.Ok(result);
+            // return rowsAffected == 0 ? Results.NotFound() : TypedResults.Ok(result);
         })
         .WithName("Update User")
         .Accepts<string>("application/json")

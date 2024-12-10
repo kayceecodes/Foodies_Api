@@ -45,9 +45,9 @@ public static class AuthEndpoints
         .Produces(StatusCodes.Status500InternalServerError)
         .WithOpenApi();
 
-        appGroup.MapPost("/register", async ([FromBody] UserDto dto, AppDbContext context, IConfiguration config, IMapper mapper) => 
+        appGroup.MapPost("/register", async ([FromBody] RegisterDto dto, AppDbContext context, IConfiguration config, IMapper mapper) => 
         {
-            var result = new ApiResult<UserDto>();
+            var result = new ApiResult<RegisterDto>();
             bool usernameexists = context.Users.Any(user => user.Username == dto.Username);
             bool emailexists = context.Users.Any(user => user.Email == dto.Email);
             
@@ -56,7 +56,7 @@ public static class AuthEndpoints
             
             if(emailexists)
             {
-                result = new ApiResult<UserDto>() 
+                result = new ApiResult<RegisterDto>() 
                 {
                     IsSuccess = false,
                     StatusCode = HttpStatusCode.Accepted,
@@ -77,9 +77,9 @@ public static class AuthEndpoints
             var mappedUserDto = mapper.Map<UserDto>(mappedUser);
             mappedUserDto.Token = token;
 
-            result = ApiResult<UserDto>.Pass(mappedUserDto);
+            ApiResult<UserDto> response = ApiResult<UserDto>.Pass(mappedUserDto);
 
-            return TypedResults.Ok(result);
+            return TypedResults.Ok(response);
         })
         .WithName("Register User")
         .Accepts<string>("application/json")

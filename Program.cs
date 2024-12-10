@@ -1,4 +1,3 @@
-using System.Reflection;
 using System.Text;
 using foodies_api.Models.Mappings;
 using foodies_api.Constants;
@@ -12,17 +11,30 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var AllowLocalDevelopment = "AllowLocalDevelopment";
-
 // temporarily hiding password in user-secrets
 var conn = builder.Configuration.GetConnectionString("DefaultConnection");
 var dbPassword = configuration["DbPassword"];
 conn += dbPassword;
 
+var CorsPolicies = new Action<CorsPolicyBuilder>(policy =>
+{
+    policy.WithOrigins("http://localhost:3000",
+                        "http://localhost:3001")
+          .AllowAnyOrigin()
+          .AllowAnyHeader()
+          .AllowAnyMethod();
+});
+
+
+builder.Services.AddCors(options => options.AddPolicy(name: AllowLocalDevelopment, CorsPolicies));
+
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(conn));
+
 builder.Services.AddAutoMapper(typeof(PostUserProfile), typeof(GetBusinessProfile), typeof(PostUserLikeBusinessProfile));
 
 builder.Services.AddScoped<IUsersLikeBusinessesRepository, UsersLikeBusinessesRepository>();
@@ -39,19 +51,6 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
     .AddEntityFrameworkStores<AppDbContext>();
 
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: AllowLocalDevelopment,
-                      policy  =>
-                      {
-                          policy.WithOrigins("http://localhost:3000",
-                                              "http://localhost:3001")
-                                .AllowAnyOrigin()
-                                .AllowAnyHeader()
-                                .AllowAnyMethod();
-                      });
-});
-
 builder.Services.AddApiVersioning(options =>
 {
     options.DefaultApiVersion = new ApiVersion(1, 0);
@@ -59,21 +58,8 @@ builder.Services.AddApiVersioning(options =>
     options.ReportApiVersions = true;
 });
 
-// builder.Services.AddSwaggerGen(options =>
-// {
-//      options.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
-
-//     // Add support for XML comments
-//     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-//     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-//     options.IncludeXmlComments(xmlPath);
-// });
-
-// Configure services
-builder.Services.AddHttpClient("FoodiesYelpService", client => 
-{
-    client.BaseAddress = new Uri(configuration.GetValue<string>("BaseAddress"));    
-});
+// Configure Http Client to Foodies Yelp Service
+builder.Services.AddHttpClient("FoodiesYelpService", client => client.BaseAddress = new Uri(configuration.GetValue<string>("BaseAddress")));
 
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer(options =>
