@@ -83,7 +83,6 @@ builder.Services.AddAuthorization(options =>
         p.RequireClaim(Identity.AdminUserClaimName, "true"));
 });
 
-builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
 
