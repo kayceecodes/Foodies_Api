@@ -8,7 +8,6 @@ public class UserLikeBusiness
     public Guid UserId { get; set; }
     public string Username { get; set; }
     public virtual User User { get; set; }
-
     public string BusinessId { get; set; }
     public string BusinessName { get; set; }
     public virtual Business Business { get; set; }        

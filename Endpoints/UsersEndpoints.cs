@@ -3,6 +3,7 @@ using foodies_api.Models.Dtos.Auth;
 using foodies_api.Models;
 using Microsoft.AspNetCore.Mvc;
 using foodies_api.Models.Entities;
+using foodies_api.Models.Dtos.Requests;
 
 
 namespace foodies_api.Endpoints;
@@ -50,7 +51,7 @@ public static class UserEndpoints
         .Produces(StatusCodes.Status500InternalServerError)
         .WithOpenApi();
 
-        appGroup.MapPut("/users/update/", async ([FromBody] UserDto userDto, AppDbContext context, IConfiguration config) => 
+        appGroup.MapPut("/users/update/", async ([FromBody] UpdateUserRequest request, AppDbContext context, IConfiguration config) => 
         {
             // var rowsAffected = await context.Users.Where(u => u.Id == userDto.Id)
             //     .ExecuteUpdateAsync(updates => 
@@ -59,11 +60,11 @@ public static class UserEndpoints
             //                .SetProperty(u => u.Password, userDto.Password)
             //                .SetProperty(u => u.Username, userDto.Username));
             
-            // var result = new ApiResult<UserDto>()
+            // var result = new ApiResult<UpdateUserResponse>()
             // {
             //     IsSuccess = true,
             //     StatusCode = HttpStatusCode.OK,
-            //     Data = userDto,
+            //     Data = request,
             // };
 
             // return rowsAffected == 0 ? Results.NotFound() : TypedResults.Ok(result);

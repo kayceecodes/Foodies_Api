@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace foodies_api.Models.Dtos.Auth;
+namespace foodies_api.Models.Dtos.Requests;
 
-public class RegisterDto
+public class RegistrationRequest
 {
         [Required(ErrorMessage = "First name is required")]
         public string FirstName { get; set; }

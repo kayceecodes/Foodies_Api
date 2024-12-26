@@ -1,7 +1,8 @@
 using AutoMapper;
 using foodies_api.Auth;
 using foodies_api.Data;
-using foodies_api.Models.Dtos.Auth;
+using foodies_api.Models.Dtos.Requests;
+using foodies_api.Models.Dtos.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using foodies_api.Models;
@@ -17,23 +18,23 @@ public static class AuthEndpoints
         var appGroup = app.MapGroup("/api/auth");
 
         // appGroup.MapPost("/user", [Authorize(Policy = Identity.AdminUserPolicyName)] async ([FromServices] IMapper mapper, UserDto dto, AppContext db) =>
-        appGroup.MapPost("/login", async ([FromBody] UserDto dto, AppDbContext context, IConfiguration config, IMapper mapper) =>
+        appGroup.MapPost("/login", async ([FromBody] LoginRequest request, AppDbContext context, IConfiguration config, IMapper mapper) =>
         {
             var matchedUser = new User();
-            if (!dto.Email.IsNullOrEmpty())
-                matchedUser = context.Users.Where(u => u.Email == dto.Email && u.Password == dto.Password).FirstOrDefault();
+            if (!request.Email.IsNullOrEmpty())
+                matchedUser = context.Users.Where(u => u.Email == request.Email && u.Password == request.Password).FirstOrDefault();
             else
-                matchedUser = context.Users.Where(u => u.Username == dto.Username && u.Password == dto.Password).FirstOrDefault();
+                matchedUser = context.Users.Where(u => u.Username == request.Username && u.Password == request.Password).FirstOrDefault();
 
             var Auth = new Authentication(config);
             if (matchedUser == null)
                 return Results.NotFound("User not found.");
 
             var token = Auth.CreateAccessToken(matchedUser);
-            var mappedUserDto = mapper.Map<UserDto>(matchedUser);
-            mappedUserDto.Token = token;
+            var LoginResponse = mapper.Map<LoginResponse>(matchedUser);
+            LoginResponse.Token = token;
 
-            var result = ApiResult<UserDto>.Pass(mappedUserDto);
+            var result = ApiResult<LoginResponse>.Pass(LoginResponse);
 
             return TypedResults.Ok(result);
         })
@@ -45,9 +46,9 @@ public static class AuthEndpoints
         .Produces(StatusCodes.Status500InternalServerError)
         .WithOpenApi();
 
-        appGroup.MapPost("/register", async ([FromBody] RegisterDto dto, AppDbContext context, IConfiguration config, IMapper mapper) =>
+        appGroup.MapPost("/register", async ([FromBody] RegistrationRequest dto, AppDbContext context, IConfiguration config, IMapper mapper) =>
         {
-            var result = new ApiResult<RegisterDto>();
+            var result = new ApiResult<RegistrationRequest>();
             bool usernameexists = context.Users.Any(user => user.Username == dto.Username);
             bool emailexists = context.Users.Any(user => user.Email == dto.Email);
 
@@ -56,7 +57,7 @@ public static class AuthEndpoints
 
             if (emailexists)
             {
-                result = new ApiResult<RegisterDto>()
+                result = new ApiResult<RegistrationRequest>()
                 {
                     IsSuccess = false,
                     StatusCode = HttpStatusCode.Accepted,
@@ -74,10 +75,10 @@ public static class AuthEndpoints
             var Auth = new Authentication(config);
 
             var token = Auth.CreateAccessToken(mappedUser);
-            var mappedUserDto = mapper.Map<UserDto>(mappedUser);
-            mappedUserDto.Token = token;
+            var mappedResponse = mapper.Map<RegistrationResponse>(mappedUser);
+            mappedResponse.Token = token;
 
-            ApiResult<UserDto> response = ApiResult<UserDto>.Pass(mappedUserDto);
+            ApiResult<RegistrationResponse> response = ApiResult<RegistrationResponse>.Pass(mappedResponse);
 
             return TypedResults.Ok(response);
         })
