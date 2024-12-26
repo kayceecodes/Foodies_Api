@@ -3,8 +3,7 @@ using foodies_api.Models.Dtos.Auth;
 using foodies_api.Models;
 using Microsoft.AspNetCore.Mvc;
 using foodies_api.Models.Entities;
-using Microsoft.EntityFrameworkCore;
-using System.Net;
+
 
 namespace foodies_api.Endpoints;
 

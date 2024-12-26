@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using foodies_api.Models.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -83,6 +84,16 @@ builder.Services.AddAuthorization(options =>
         p.RequireClaim(Identity.AdminUserClaimName, "true"));
 });
 
+builder.Services.AddIdentityApiEndpoints<User>(
+    opt => 
+    { 
+        opt.Password.RequiredLength = 8; 
+        opt.User.RequireUniqueEmail = true; 
+        opt.Password.RequireNonAlphanumeric = false;
+        opt.SignIn.RequireConfirmedEmail = true; 
+    })
+    .AddDefaultUI()
+    .AddEntityFrameworkStores<AppDbContext>();
 
 var app = builder.Build();
 
