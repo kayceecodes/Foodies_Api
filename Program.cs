@@ -47,9 +47,9 @@ builder.Services.AddScoped<IFoodiesYelpService, FoodiesYelpService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => 
-    options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<AppDbContext>();
+// builder.Services.AddDefaultIdentity<IdentityUser>(options => 
+//     options.SignIn.RequireConfirmedAccount = true)
+//     .AddEntityFrameworkStores<AppDbContext>();
 
 
 builder.Services.AddApiVersioning(options =>
@@ -84,16 +84,16 @@ builder.Services.AddAuthorization(options =>
         p.RequireClaim(Identity.AdminUserClaimName, "true"));
 });
 
-builder.Services.AddIdentityApiEndpoints<User>(
-    opt => 
-    { 
-        opt.Password.RequiredLength = 8; 
-        opt.User.RequireUniqueEmail = true; 
-        opt.Password.RequireNonAlphanumeric = false;
-        opt.SignIn.RequireConfirmedEmail = true; 
-    })
-    .AddDefaultUI()
-    .AddEntityFrameworkStores<AppDbContext>();
+// builder.Services.AddIdentityApiEndpoints<User>(
+//     opt => 
+//     { 
+//         opt.Password.RequiredLength = 8; 
+//         opt.User.RequireUniqueEmail = true; 
+//         opt.Password.RequireNonAlphanumeric = false;
+//         opt.SignIn.RequireConfirmedEmail = true; 
+//     })
+//     .AddDefaultUI()
+//     .AddEntityFrameworkStores<AppDbContext>();
 
 var app = builder.Build();
 

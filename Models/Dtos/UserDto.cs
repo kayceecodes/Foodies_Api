@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace foodies_api.Models.Dtos.Auth;
+namespace foodies_api.Models.Dtos;
 
 public class UserDto
 {
