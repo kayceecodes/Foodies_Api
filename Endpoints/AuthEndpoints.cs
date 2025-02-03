@@ -15,10 +15,9 @@ public static class AuthEndpoints
 {
     public static void ConfigurationAuthEndpoints(this WebApplication app)
     {
-        var appGroup = app.MapGroup("/api/auth");
 
-        // appGroup.MapPost("/user", [Authorize(Policy = Identity.AdminUserPolicyName)] async ([FromServices] IMapper mapper, UserDto dto, AppContext db) =>
-        appGroup.MapPost("/login", async ([FromBody] LoginRequest request, AppDbContext context, IConfiguration config, IMapper mapper) =>
+        // app.MapPost("/user", [Authorize(Policy = Identity.AdminUserPolicyName)] async ([FromServices] IMapper mapper, UserDto dto, AppContext db) =>
+        app.MapPost("/api/auth/login", async ([FromBody] LoginRequest request, AppDbContext context, IConfiguration config, IMapper mapper) =>
         {
             var matchedUser = new User();
             if (!request.Email.IsNullOrEmpty())
@@ -46,7 +45,7 @@ public static class AuthEndpoints
         .Produces(StatusCodes.Status500InternalServerError)
         .WithOpenApi();
 
-        appGroup.MapPost("/register", async ([FromBody] RegistrationRequest dto, AppDbContext context, IConfiguration config, IMapper mapper) =>
+        app.MapPost("/api/auth/register", async ([FromBody] RegistrationRequest dto, AppDbContext context, IConfiguration config, IMapper mapper) =>
         {
             var result = new ApiResult<RegistrationRequest>();
             bool usernameexists = context.Users.Any(user => user.Username == dto.Username);

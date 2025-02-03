@@ -1,9 +1,10 @@
 using foodies_api.Data;
-using foodies_api.Models.Dtos.Auth;
 using foodies_api.Models;
 using Microsoft.AspNetCore.Mvc;
 using foodies_api.Models.Entities;
 using foodies_api.Models.Dtos.Requests;
+using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 
 namespace foodies_api.Endpoints;
@@ -11,10 +12,8 @@ namespace foodies_api.Endpoints;
 public static class UserEndpoints
 {
     public static void ConfigurationUserEndpoints(this WebApplication app) 
-    {
-        var appGroup = app.MapGroup("/api");
-        
-        appGroup.MapGet("/users", (AppDbContext dbContext) =>
+    {        
+        app.MapGet("/api/users", (AppDbContext dbContext) =>
         {
             var users = dbContext.Users.ToList();
 
@@ -27,7 +26,7 @@ public static class UserEndpoints
         .Produces(StatusCodes.Status500InternalServerError)
         .WithOpenApi();
 
-        appGroup.MapDelete("/users/delete/", async ([FromBody] Guid userId, AppDbContext context, IConfiguration config) => 
+        app.MapDelete("/api/users/remove/", async ([FromBody] Guid userId, AppDbContext context, IConfiguration config) => 
         {
             var user = await context.Users.FindAsync(userId);
             var result = new ApiResult<User>();
@@ -51,23 +50,24 @@ public static class UserEndpoints
         .Produces(StatusCodes.Status500InternalServerError)
         .WithOpenApi();
 
-        appGroup.MapPut("/users/update/", async ([FromBody] UpdateUserRequest request, AppDbContext context, IConfiguration config) => 
+        app.MapPut("/api/users/edit/", async ([FromBody] UpdateUserRequest userRequest, AppDbContext context, IConfiguration config, HttpContext httpContext) => 
         {
-            // var rowsAffected = await context.Users.Where(u => u.Id == userDto.Id)
-            //     .ExecuteUpdateAsync(updates => 
-            //         updates.SetProperty(u => u.Email, userDto.Email)
-            //                .SetProperty(u => u.FirstAndLastName, userDto.FirstName + " " + userDto.LastName)
-            //                .SetProperty(u => u.Password, userDto.Password)
-            //                .SetProperty(u => u.Username, userDto.Username));
+            var userId = Guid.Parse(httpContext.User.FindFirst(userRequest.Username).Value);
+            var rowsAffected = await context.Users.Where(u => u.Id == userId)
+                .ExecuteUpdateAsync(updates => 
+                    updates.SetProperty(u => u.Email, userRequest.Email)
+                           .SetProperty(u => u.FirstAndLastName, userRequest.FirstName + " " + userRequest.LastName)
+                           .SetProperty(u => u.Password, userRequest.Password)
+                           .SetProperty(u => u.Username, userRequest.Username));
             
-            // var result = new ApiResult<UpdateUserResponse>()
-            // {
-            //     IsSuccess = true,
-            //     StatusCode = HttpStatusCode.OK,
-            //     Data = request,
-            // };
+            var result = new ApiResult<UpdateUserRequest>()
+            {
+                IsSuccess = true,
+                StatusCode = HttpStatusCode.OK,
+                Data = userRequest,
+            };
 
-            // return rowsAffected == 0 ? Results.NotFound() : TypedResults.Ok(result);
+            return rowsAffected == 0 ? Results.NotFound() : TypedResults.Ok(result);
         })
         .WithName("Update User")
         .Accepts<string>("application/json")

@@ -13,7 +13,7 @@ using foodies_api.Data;
 namespace foodies_api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241227004252_initial")]
+    [Migration("20250129045050_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -126,6 +126,9 @@ namespace foodies_api.Migrations
 
                     b.Property<string>("BusinessName")
                         .HasColumnType("text");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Username")
                         .HasColumnType("text");

@@ -124,6 +124,9 @@ namespace foodies_api.Migrations
                     b.Property<string>("BusinessName")
                         .HasColumnType("text");
 
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Username")
                         .HasColumnType("text");
 

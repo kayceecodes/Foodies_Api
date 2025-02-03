@@ -10,15 +10,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace foodies_api.Repositories;
 
-public class UsersLikeBusinessesRepository(AppDbContext _context, ILogger<UserLikeBusiness> _logger, IMapper _mapper) : IUsersLikeBusinessesRepository
+public class UsersLikeBusinessesRepository: IUsersLikeBusinessesRepository
 {
-    // public AppDbContext _context { get; set; }
-    // public ILogger _logger { get; set; }
-    // public UsersLikeBusinessesRepository(AppDbContext context, IMapper mapper)
-    // {
-    //     _context = context;
-    //     _mapper = mapper;
-    // }
+    public AppDbContext _context { get; set; }
+    public ILogger<UserLikeBusiness> _logger { get; set; }
+    public IMapper _mapper { get; set; }
+    public UsersLikeBusinessesRepository(AppDbContext context, IMapper mapper, ILogger<UserLikeBusiness> logger)
+    {
+        _context = context;
+        _mapper = mapper;
+        _logger = logger;
+    }
     public async Task<RepositoryResponse<UserLikeBusiness>> AddUserLikes(UserLikeBusiness userLike) 
     {
         try {

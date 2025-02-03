@@ -8,7 +8,6 @@ namespace foodies_api.Models.Entities;
 [PrimaryKey(nameof(Id))]
 public class User
 {
-    [Required, Key]
     public Guid Id { get; set; }
 
     public string FirstAndLastName { get; set; }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using foodies_api.Models.Dtos;
 using foodies_api.Models.Dtos.Auth;
 using foodies_api.Models.Entities;
 

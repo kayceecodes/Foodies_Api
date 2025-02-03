@@ -63,6 +63,7 @@ namespace foodies_api.Migrations
                 {
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     BusinessId = table.Column<string>(type: "text", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false),
                     Username = table.Column<string>(type: "text", nullable: true),
                     BusinessName = table.Column<string>(type: "text", nullable: true)
                 },

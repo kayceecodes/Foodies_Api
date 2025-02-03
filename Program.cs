@@ -10,17 +10,15 @@ using foodies_api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Cors.Infrastructure;
-using foodies_api.Models.Entities;
+
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var AllowLocalDevelopment = "AllowLocalDevelopment";
-// temporarily hiding password in user-secrets
-var conn = builder.Configuration.GetConnectionString("DefaultConnection");
-var dbPassword = configuration["DbPassword"];
-conn += dbPassword;
+
+// var conn = configuration.GetConnectionString("DefaultConnection");
+var conn = configuration["DbConnection"];
 
 var CorsPolicies = new Action<CorsPolicyBuilder>(policy =>
 {
@@ -46,11 +44,6 @@ builder.Services.AddScoped<IFoodiesYelpService, FoodiesYelpService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-// builder.Services.AddDefaultIdentity<IdentityUser>(options => 
-//     options.SignIn.RequireConfirmedAccount = true)
-//     .AddEntityFrameworkStores<AppDbContext>();
-
 
 builder.Services.AddApiVersioning(options =>
 {
@@ -84,17 +77,6 @@ builder.Services.AddAuthorization(options =>
         p.RequireClaim(Identity.AdminUserClaimName, "true"));
 });
 
-// builder.Services.AddIdentityApiEndpoints<User>(
-//     opt => 
-//     { 
-//         opt.Password.RequiredLength = 8; 
-//         opt.User.RequireUniqueEmail = true; 
-//         opt.Password.RequireNonAlphanumeric = false;
-//         opt.SignIn.RequireConfirmedEmail = true; 
-//     })
-//     .AddDefaultUI()
-//     .AddEntityFrameworkStores<AppDbContext>();
-
 var app = builder.Build();
 
 app.UseSwagger();
@@ -108,11 +90,9 @@ app.UseSwaggerUI(options =>
 app.UseAuthentication();
 app.UseAuthorization();
 
-// app.UseHttpsRedirection();
-
-app.ConfigurationUserEndpoints();
-app.ConfigurationAuthEndpoints();
 app.ConfigurationUserLikeBusinessEndpoints();
+app.ConfigurationAuthEndpoints();
+app.ConfigurationUserEndpoints();
 
 app.UseCors(AllowLocalDevelopment);
 
