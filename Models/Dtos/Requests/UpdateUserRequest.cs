@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace foodies_api.Models.Dtos.Requests;
 
-public class UpdateUserRequest
+public class UserUpdateRequest
 {
     public string FirstName { get; set; }
     public string LastName { get; set; }

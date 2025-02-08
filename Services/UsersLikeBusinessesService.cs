@@ -41,7 +41,7 @@ public class UsersLikeBusinessesService : IUsersLikeBusinessesService
 
         if(!result.Success)
         {
-            var message = $"Coundn't delete {dto.BusinessName} from UserLikeBusinesses";
+            var message = $"Couldn't delete {dto.BusinessName} from UserLikeBusinesses";
             _logger.LogError(message);
             return ApiResult<UserLikeBusinessDto>.Fail(message, HttpStatusCode.BadRequest);
         }
@@ -60,7 +60,7 @@ public class UsersLikeBusinessesService : IUsersLikeBusinessesService
             { 
                 IsSuccess = false, 
                 StatusCode = HttpStatusCode.BadRequest, 
-                ErrorMessages = ["Coundn't get any UserLikeBusinesses"] 
+                ErrorMessages = ["Couldn't get any UserLikeBusinesses"] 
             };
         }
 

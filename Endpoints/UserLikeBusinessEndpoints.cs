@@ -10,21 +10,22 @@ namespace foodies_api.Endpoints;
 
 public static class UserLikeBusinessEndpoints
 {
-    public static void ConfigurationUserLikeBusinessEndpoints(this WebApplication app) 
+    public static void ConfigurationUserLikeBusinessEndpoints(this WebApplication app)
     {
         app.MapPost("/api/userlikebusinesses/", [Authorize] async Task<IResult> (
-            [FromBody] UserLikeBusinessDto dto, 
-            IUsersLikeBusinessesService usersLikeService, 
-            HttpContext httpContext, 
+            [FromBody] UserLikeBusinessDto dto,
+            IUsersLikeBusinessesService usersLikeService,
+            HttpContext httpContext,
             IFoodiesYelpService foodiesYelpService,
             IBusinessService businessService
              ) =>
         {
             var foodiesYelpResult = await foodiesYelpService.GetBusinessById(dto.BusinessId);
             await businessService.AddBusiness(foodiesYelpResult.Data);
-        
+
             ApiResult<UserLikeBusinessDto> result = await usersLikeService.AddUserLikes(
-                new UserLikeBusinessDto() {
+                new UserLikeBusinessDto()
+                {
                     UserId = Guid.Parse(httpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value),
                     BusinessId = foodiesYelpResult.Data.Id,
                     BusinessName = foodiesYelpResult.Data.Name,
@@ -37,12 +38,15 @@ public static class UserLikeBusinessEndpoints
 
             return TypedResults.Ok($"Added NAME: {result.Data.BusinessName}, ID: {result.Data.BusinessId} to Businesses.");
 
-        }).WithName("AddUsersLikeBusinessses").Accepts<UserLikeBusinessDto>("application/json")
-        .Produces<ApiResult<List<UserLikeBusinessDto>>>(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status500InternalServerError);
+        })
+        .WithName("AddUsersLikeBusinessses")
+        .Accepts<UserLikeBusinessDto>("application/json")
+        .Produces<ApiResult<List<UserLikeBusinessDto>>>(StatusCodes.Status201Created)
+        .Produces(StatusCodes.Status400BadRequest)
+        .Produces(StatusCodes.Status401Unauthorized);        
 
         app.MapDelete("/api/userlikebusinesses/{businessId}", [Authorize] async Task<IResult> (
-            string businessId, 
+            string businessId,
             HttpContext httpContext,
             IUsersLikeBusinessesService service) =>
         {
@@ -52,27 +56,33 @@ public static class UserLikeBusinessEndpoints
 
             if (!result.IsSuccess)
                 return TypedResults.BadRequest(result.ErrorMessages);
-    
+
             return TypedResults.Ok<ApiResult<UserLikeBusinessDto>>(result);
 
-        }).WithName("RemoveUsersLikeBusinessse").Accepts<UserLikeBusinessDto>("application/json")
-        .Produces<ApiResult<List<UserLikeBusinessDto>>>(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status500InternalServerError);
+        })
+        .WithName("RemoveUsersLikeBusinessse")
+        .Accepts<UserLikeBusinessDto>("application/json")
+        .Produces<ApiResult<List<UserLikeBusinessDto>>>(StatusCodes.Status204NoContent)
+        .Produces(StatusCodes.Status400BadRequest)
+        .Produces(StatusCodes.Status401Unauthorized);
 
         app.MapGet("/api/userlikebusinesses/", [Authorize] async Task<IResult> (HttpContext httpContext, IUsersLikeBusinessesService service) =>
         {
             string userId = httpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var userGuid = Guid.Parse(userId);
-            
+
             ApiResult<List<UserLikeBusinessDto>> result = await service.GetUserLikesByUserId(userGuid);
 
-            if(!result.IsSuccess)
+            if (!result.IsSuccess)
                 return TypedResults.BadRequest(result.ErrorMessages);
 
             return TypedResults.Ok<ApiResult<List<UserLikeBusinessDto>>>(result);
 
-        }).WithName("GetUserLikeBusinesses").Accepts<UserLikeBusinessDto>("application/json")
+        })
+        .WithName("GetUserLikeBusinesses")
+        .Accepts<UserLikeBusinessDto>("application/json")
         .Produces<ApiResult<List<UserLikeBusinessDto>>>(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status500InternalServerError);    
+        .Produces(StatusCodes.Status400BadRequest)
+        .Produces(StatusCodes.Status401Unauthorized);
     }
 }

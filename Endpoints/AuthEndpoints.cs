@@ -41,11 +41,9 @@ public static class AuthEndpoints
         .Accepts<string>("application/json")
         .Produces<ApiResult<List<User>>>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status400BadRequest)
-        .Produces(StatusCodes.Status404NotFound)
-        .Produces(StatusCodes.Status500InternalServerError)
         .WithOpenApi();
 
-        app.MapPost("/api/auth/register", async ([FromBody] RegistrationRequest dto, AppDbContext context, IConfiguration config, IMapper mapper) =>
+        app.MapPost("/api/auth/users", async ([FromBody] RegistrationRequest dto, AppDbContext context, IConfiguration config, IMapper mapper) =>
         {
             var result = new ApiResult<RegistrationRequest>();
             bool usernameexists = context.Users.Any(user => user.Username == dto.Username);
@@ -60,7 +58,7 @@ public static class AuthEndpoints
                 {
                     IsSuccess = false,
                     StatusCode = HttpStatusCode.Accepted,
-                    ErrorMessages = ["Email already exists, use another email or recover your account"]
+                    ErrorMessages = ["Email already exists, use another email"]
                 };
                 return TypedResults.Ok(result);
             }
@@ -85,8 +83,6 @@ public static class AuthEndpoints
         .Accepts<string>("application/json")
         .Produces<ApiResult<List<User>>>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status400BadRequest)
-        .Produces(StatusCodes.Status404NotFound)
-        .Produces(StatusCodes.Status500InternalServerError)
         .WithOpenApi();
     }
 }

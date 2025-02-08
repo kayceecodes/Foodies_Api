@@ -17,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var AllowLocalDevelopment = "AllowLocalDevelopment";
 
-// var conn = configuration.GetConnectionString("DefaultConnection");
+// var conn = configuration.GetConnectionString("DefaultConnection"); //
 var conn = configuration["DbConnection"];
 
 var CorsPolicies = new Action<CorsPolicyBuilder>(policy =>
@@ -28,7 +28,6 @@ var CorsPolicies = new Action<CorsPolicyBuilder>(policy =>
           .AllowAnyHeader()
           .AllowAnyMethod();
 });
-
 
 builder.Services.AddCors(options => options.AddPolicy(name: AllowLocalDevelopment, CorsPolicies));
 
@@ -44,7 +43,6 @@ builder.Services.AddScoped<IFoodiesYelpService, FoodiesYelpService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 builder.Services.AddApiVersioning(options =>
 {
     options.DefaultApiVersion = new ApiVersion(1, 0);
