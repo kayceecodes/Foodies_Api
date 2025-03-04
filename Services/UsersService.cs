@@ -2,22 +2,21 @@ using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using foodies_api.Interfaces.Repositories;
+using foodies_api.Interfaces.Services;
 using foodies_api.Models;
 using foodies_api.Models.Dtos.Requests;
 using foodies_api.Models.Entities;
 using Microsoft.Extensions.Logging;
 
-namespace FoodiesApi.Services
+namespace foodies_api.Services
 {
-    public class UsersService
+    public class UsersService : IUsersService
     {
         private readonly ILogger<UsersService> _logger;
-        private readonly IMapper _mapper;
         private IUsersRepository _repository;
-        public UsersService(ILogger<UsersService> logger, IMapper mapper, IUsersRepository repository)
+        public UsersService(ILogger<UsersService> logger, IUsersRepository repository)
         {
             _logger = logger;
-            _mapper = mapper;
             _repository = repository;
         }
 
@@ -40,9 +39,9 @@ namespace FoodiesApi.Services
             return new ApiResult<IEnumerable<User>> { Data = result.Data, IsSuccess = true, StatusCode = HttpStatusCode.OK };
         }
 
-        public async Task<ApiResult<User>> GetUser(Guid userId)
+        public async Task<ApiResult<User>> GetUserById(Guid userId)
         {
-            var result = await _repository.GetUser(userId);
+            var result = await _repository.GetUserById(userId);
 
             if(!result.Success)
             {
@@ -56,7 +55,7 @@ namespace FoodiesApi.Services
             }
 
             _logger.LogInformation($"Successfully got user with ID {userId}");
-            return await Task.FromResult(new ApiResult<User>());
+            return new ApiResult<User> { Data = result.Data, IsSuccess = true, StatusCode = HttpStatusCode.OK };        
         }
 
         public async Task<ApiResult<User>> DeleteUser(Guid userId)
@@ -75,7 +74,7 @@ namespace FoodiesApi.Services
             }
 
             _logger.LogInformation($"Successfully deleted user with ID {userId}");
-            return await Task.FromResult(new ApiResult<User>());
+            return new ApiResult<User> { Data = result.Data, IsSuccess = true, StatusCode = HttpStatusCode.NoContent };
         }
 
         public async Task<ApiResult<User>> UpdateUser(Guid userId, UserUpdateRequest request)
@@ -94,7 +93,7 @@ namespace FoodiesApi.Services
             }
 
             _logger.LogInformation($"Successfully updated user with ID {userId}");
-            return await Task.FromResult(new ApiResult<User>());
+            return new ApiResult<User> { Data = result.Data, IsSuccess = true, StatusCode = HttpStatusCode.OK };
         }
     }
 }

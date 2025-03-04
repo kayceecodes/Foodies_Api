@@ -12,6 +12,6 @@ namespace foodies_api.Interfaces.Repositories
         public Task<RepositoryResponse<User>> UpdateUser(Guid userId, UserUpdateRequest request);
         public Task<RepositoryResponse<User>> DeleteUser(Guid userId);
         public Task<RepositoryResponse<IEnumerable<User>>> GetUsers();
-        public Task<RepositoryResponse<User>> GetUser(Guid userId);
+        public Task<RepositoryResponse<User>> GetUserById(Guid userId);
     }
 }

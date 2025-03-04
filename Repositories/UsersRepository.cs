@@ -42,7 +42,7 @@ namespace foodies_api.Repositories
             }
         }
 
-        public async Task<RepositoryResponse<User>> GetUser(Guid userId)
+        public async Task<RepositoryResponse<User>> GetUserById(Guid userId)
         {
             try
             {
@@ -113,17 +113,30 @@ namespace foodies_api.Repositories
                     return new RepositoryResponse<User>()
                     {
                         Success = false,
-                        Exception = new Exception("User not found")
+                        Message = "User not found"
                     };
                 }
 
-                _context.Entry(existingUser).CurrentValues.SetValues(request);
-                await _context.SaveChangesAsync();
+                var entry = _context.Entry(existingUser);
+                entry.CurrentValues.SetValues(request);
 
+                foreach (var property in typeof(UserUpdateRequest).GetProperties())
+                {
+                    var newValue = property.GetValue(request);
+                    if (newValue == null)
+                    {
+                        entry.Property(property.Name).IsModified = false;
+                    }
+                }
+ 
+                await _context.SaveChangesAsync();
+                var updatedUser = await _context.Users.FindAsync(userId);
+                
                 return new RepositoryResponse<User>()
                 {
                     Success = true,
-                    Data = existingUser
+                    Data = updatedUser,
+                    Message = "User updated"
                 };
             }
             catch (Exception ex)
