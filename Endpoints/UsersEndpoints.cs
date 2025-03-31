@@ -11,11 +11,11 @@ namespace foodies_api.Endpoints;
 
 public static class UserEndpoints
 {
-    public static void ConfigurationUserEndpoints(this WebApplication app) 
-    {        
-        app.MapGet("/api/users", async Task<IResult> (IUsersService service) =>
+    public static void ConfigurationUserEndpoints(this WebApplication app)
+    {
+        app.MapGet("/api/users", async Task<IResult> (IUsersService usersService) =>
         {
-            var result = await service.GetUsers();
+            var result = await usersService.GetUsers();
 
             if (!result.IsSuccess)
             {
@@ -30,10 +30,10 @@ public static class UserEndpoints
         .Produces(StatusCodes.Status400BadRequest)
         .WithOpenApi();
 
-        app.MapDelete("/api/users/{id}", async Task<IResult> (string id, IUsersService service) => 
+        app.MapDelete("/api/users/{id}", async Task<IResult> (string id, IUsersService usersService) =>
         {
             Guid userId = Guid.Parse(id);
-            var result = await service.DeleteUser(userId);
+            var result = await usersService.DeleteUser(userId);
 
             if (!result.IsSuccess)
             {
@@ -49,17 +49,17 @@ public static class UserEndpoints
         .Produces(StatusCodes.Status404NotFound)
         .WithOpenApi();
 
-        app.MapPut("/api/users/{id}", async Task<IResult> (string id, [FromBody] UserUpdateRequest request, IUsersService service) => 
+        app.MapPut("/api/users/{id}", async Task<IResult> (string id, [FromBody] UserUpdateRequest request, IUsersService usersService) =>
         {
             Guid userId = Guid.Parse(id);
-            var result = await service.UpdateUser(userId, request);
+            var result = await usersService.UpdateUser(userId, request);
 
             if (!result.IsSuccess)
             {
-                return TypedResults.BadRequest(result); 
+                return TypedResults.BadRequest(result);
             }
 
-           return TypedResults.Ok(result);
+            return TypedResults.Ok(result);
         })
         .WithName("Update User")
         .Accepts<string>("application/json")

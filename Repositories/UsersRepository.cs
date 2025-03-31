@@ -19,13 +19,13 @@ namespace foodies_api.Repositories
             _logger = logger;
         }
 
-        public async Task<RepositoryResponse<IEnumerable<User>>> GetUsers()
+        public async Task<RepositoryResponse<List<User>>> GetUsers()
         {
             try
             {
                 var users = await _context.Users.ToListAsync();
 
-                return new RepositoryResponse<IEnumerable<User>>()
+                return new RepositoryResponse<List<User>>()
                 {
                     Success = true,
                     Data = users
@@ -34,7 +34,7 @@ namespace foodies_api.Repositories
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to get users");
-                return new RepositoryResponse<IEnumerable<User>>()
+                return new RepositoryResponse<List<User>>()
                 {
                     Success = false,
                     Exception = ex

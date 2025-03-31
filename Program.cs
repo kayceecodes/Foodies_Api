@@ -39,6 +39,8 @@ builder.Services.AddScoped<IUsersLikeBusinessesRepository, UsersLikeBusinessesRe
 builder.Services.AddScoped<IUsersLikeBusinessesService, UsersLikeBusinessesService>();
 builder.Services.AddScoped<IBusinessService, BusinessService>();
 builder.Services.AddScoped<IBusinessRepository, BusinessRepository>();
+builder.Services.AddScoped<IUsersService, UsersService>();
+builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 builder.Services.AddScoped<IFoodiesYelpService, FoodiesYelpService>();
 
 builder.Services.AddEndpointsApiExplorer();

@@ -8,7 +8,7 @@ namespace foodies_api.Interfaces.Services;
 
 public interface IUsersService
 {
-    public Task<ApiResult<User>> GetUsers();
+    public Task<ApiResult<List<User>>> GetUsers();
     public Task<ApiResult<User>> DeleteUser(Guid userId);
     public Task<ApiResult<User>> UpdateUser(Guid userId, UserUpdateRequest request);
 }

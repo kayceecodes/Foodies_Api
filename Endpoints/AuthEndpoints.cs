@@ -43,7 +43,7 @@ public static class AuthEndpoints
         .Produces(StatusCodes.Status400BadRequest)
         .WithOpenApi();
 
-        app.MapPost("/api/auth/users", async ([FromBody] RegistrationRequest dto, AppDbContext context, IConfiguration config, IMapper mapper) =>
+        app.MapPost("/api/auth/register", async ([FromBody] RegistrationRequest dto, AppDbContext context, IConfiguration config, IMapper mapper) =>
         {
             var result = new ApiResult<RegistrationRequest>();
             bool usernameexists = context.Users.Any(user => user.Username == dto.Username);

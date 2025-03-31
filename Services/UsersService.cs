@@ -2,14 +2,14 @@ using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using foodies_api.Interfaces.Repositories;
+using foodies_api.Interfaces.Services;
 using foodies_api.Models;
 using foodies_api.Models.Dtos.Requests;
 using foodies_api.Models.Entities;
-using Microsoft.Extensions.Logging;
 
-namespace FoodiesApi.Services
+namespace foodies_api.Services
 {
-    public class UsersService
+    public class UsersService : IUsersService
     {
         private readonly ILogger<UsersService> _logger;
         private readonly IMapper _mapper;
@@ -21,23 +21,24 @@ namespace FoodiesApi.Services
             _repository = repository;
         }
 
-        public async Task<ApiResult<IEnumerable<User>>> GetUsers()
+        public async Task<ApiResult<List<User>>> GetUsers()
         {
             var result = await _repository.GetUsers();
 
             if(!result.Success)
             {
                 _logger.LogError($"Failed to get users");
-                return new ApiResult<IEnumerable<User>> 
+                return new ApiResult<List<User>> 
                 { 
                     IsSuccess = false, 
                     StatusCode = HttpStatusCode.BadRequest, 
-                    ErrorMessages = [$"Couldn't get any Users"] 
+                    ErrorMessages = [$"Couldn't get any Users"],
+                    Exception = result.Exception 
                 };
             }
 
             _logger.LogInformation($"Successfully got users");
-            return new ApiResult<IEnumerable<User>> { Data = result.Data, IsSuccess = true, StatusCode = HttpStatusCode.OK };
+            return new ApiResult<List<User>> { Data = result.Data, IsSuccess = true, StatusCode = HttpStatusCode.OK };
         }
 
         public async Task<ApiResult<User>> GetUser(Guid userId)
@@ -51,7 +52,7 @@ namespace FoodiesApi.Services
                 { 
                     IsSuccess = false, 
                     StatusCode = HttpStatusCode.BadRequest, 
-                    ErrorMessages = [$"Couldn't get user with ID {userId}"] 
+                    ErrorMessages = [$"Couldn't get user with ID {userId}"]
                 };
             }
 
