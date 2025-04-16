@@ -9,6 +9,10 @@ using Microsoft.Extensions.Logging;
 
 namespace foodies_api.Services;
 
+
+/// <summary>
+/// Provides services for managing businesses, including adding, retrieving, and updating business data.
+/// </summary>
 public class BusinessService : IBusinessService
 {
     private IMapper _mapper { get; set; }
@@ -22,6 +26,14 @@ public class BusinessService : IBusinessService
         _logger = logger;
     }
 
+    /// <summary>
+    /// Adds a new business to the system.
+    /// </summary>
+    /// <param name="business">The <see cref="GetBusinessResponse"/> object containing the business details to add.</param>
+    /// <returns>
+    /// An <see cref="ApiResult{T}"/> containing the added business if successful, 
+    /// or an error message and status code if the operation fails.
+    /// </returns>
     public async Task<ApiResult<Business>> AddBusiness(GetBusinessResponse business)
     {
         var mappedBusiness = _mapper.Map<Business>(business);

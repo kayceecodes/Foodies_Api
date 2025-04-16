@@ -7,11 +7,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace foodies_api.Repositories;
 
+/// <summary>
+/// Provides repository methods for managing business entities in the database.
+/// </summary>
 public class BusinessRepository(AppDbContext context) : IBusinessRepository
 {
     public AppDbContext _context { get; set; } = context;
     public ILogger _logger { get; set; }
 
+    /// <summary>
+    /// Adds a new business to the database.
+    /// </summary>
+    /// <param name="business">The <see cref="Business"/> object containing the business details to add.</param>
+    /// <returns>
+    /// A <see cref="RepositoryResponse{T}"/> containing the added business if successful, 
+    /// or an error message and exception if the operation fails.
+    /// </returns>
     public async Task<RepositoryResponse<Business>> AddBusiness(Business business) 
     {
         var businessExists = await _context.Businesses.AnyAsync(b => b.Id == business.Id );

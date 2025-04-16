@@ -7,6 +7,9 @@ using foodies_api.Models.Dtos.Responses;
 
 namespace foodies_api.Services;
 
+/// <summary>
+/// Provides services for interacting with the Yelp API to retrieve business information.
+/// </summary>
 public class FoodiesYelpService : IFoodiesYelpService
 {
     private ILogger<FoodiesYelpService> _logger; 
@@ -19,6 +22,15 @@ public class FoodiesYelpService : IFoodiesYelpService
         _businessRepository = businessRepository;
     }
 
+    /// <summary>
+    /// Retrieves a business by its unique identifier from the Yelp API.
+    /// </summary>
+    /// <param name="businessId">The unique identifier of the business to retrieve.</param>
+    /// <returns>
+    /// An <see cref="ApiResult{T}"/> containing the business details if successful, 
+    /// or an error message and status code if the operation fails.
+    /// </returns>
+    /// <exception cref="HttpRequestException">Thrown if the HTTP request to the Yelp API fails.</exception>
     public async Task<ApiResult<GetBusinessResponse>> GetBusinessById(string businessId)
     {
         var httpClient = _httpClientFactory.CreateClient("FoodiesYelpService"); 

@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace foodies_api.Repositories
 {
+    /// <summary>
+    /// Provides repository methods for managing user entities in the database.
+    /// </summary>
     public class UsersRepository : IUsersRepository
     {
         private readonly AppDbContext _context;
@@ -19,7 +22,13 @@ namespace foodies_api.Repositories
             _logger = logger;
         }
 
-        public async Task<RepositoryResponse<List<User>>> GetUsers()
+        /// <summary>
+        /// Retrieves a list of all users from the database.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="RepositoryResponse{T}"/> containing a list of users if successful
+        /// </returns>
+        public async Task<RepositoryResponse<List<User>>> GetAllUsers()
         {
             try
             {
@@ -42,7 +51,14 @@ namespace foodies_api.Repositories
             }
         }
 
-        public async Task<RepositoryResponse<User>> GetUser(Guid userId)
+        /// <summary>
+        /// Retrieves a user by their unique identifier.
+        /// </summary>
+        /// <param name="userId">The unique identifier of the user to retrieve.</param>
+        /// <returns>
+        /// A <see cref="RepositoryResponse{T}"/> containing the user if found
+        /// </returns>
+        public async Task<RepositoryResponse<User>> GetUserById(Guid userId)
         {
             try
             {
@@ -73,28 +89,38 @@ namespace foodies_api.Repositories
             }
         }
 
-        public async Task<RepositoryResponse<User>> DeleteUser(Guid userId)
+        /// <summary>
+        /// Deletes a user by their unique identifier.
+        /// </summary>
+        /// <param name="userId">The unique identifier of the user to delete.</param>
+        /// <returns>
+        /// A <see cref="RepositoryResponse{T}"/> containing the deleted user if successful, 
+        /// </returns>
+        /// <exception cref="Exception">Thrown if the user does not exist.</exception>
+        public async Task<RepositoryResponse<User>> DeleteUserById(Guid userId)
         {
-            var userExists = await _context.Users.AnyAsync(b => b.Id == userId);
-
-            if (!userExists)
-            {
-                _logger.LogWarning($"User with ID {userId} does not exist");
-                throw new Exception("User does not exist");
-            }
-
             try
             {
                 var user = await _context.Users.FindAsync(userId);
-                _context.Users.Remove(user);
-                await _context.SaveChangesAsync();
-
-                return new RepositoryResponse<User>()
+                if (user != null)
                 {
-                    Success = true,
-                    Data = user,
-                };
-            }
+                    _context.Users.Remove(user);
+                    await _context.SaveChangesAsync();
+
+                    return new RepositoryResponse<User>()
+                    {
+                        Success = true,
+                        Data = user,
+                    };
+                }
+                else 
+                {
+                    return new () {
+                        Success = false,
+                        Message = "User Not Found!" 
+                    };
+                }
+           }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failed to delete user with ID {userId}");
@@ -102,12 +128,20 @@ namespace foodies_api.Repositories
             }
         }
 
+        /// <summary>
+        /// Updates a user's information in the database.
+        /// </summary>
+        /// <param name="userId">The unique identifier of the user to update.</param>
+        /// <param name="request">The <see cref="UserUpdateRequest"/> containing the updated user information.</param>
+        /// <returns>
+        /// A <see cref="RepositoryResponse{T}"/> containing the updated user if successful
+        /// </returns>
         public async Task<RepositoryResponse<User>> UpdateUser(Guid userId, UserUpdateRequest request)
         {
             try
             {
-                var existingUser = await _context.Users.FindAsync(userId);
-                if (existingUser == null)
+                var user = await _context.Users.FindAsync(userId);
+                if (user == null)
                 {
                     _logger.LogWarning($"User with ID {userId} not found");
                     return new RepositoryResponse<User>()
@@ -117,13 +151,13 @@ namespace foodies_api.Repositories
                     };
                 }
 
-                _context.Entry(existingUser).CurrentValues.SetValues(request);
+                _context.Entry(user).CurrentValues.SetValues(request);
                 await _context.SaveChangesAsync();
 
                 return new RepositoryResponse<User>()
                 {
                     Success = true,
-                    Data = existingUser
+                    Data = user
                 };
             }
             catch (Exception ex)

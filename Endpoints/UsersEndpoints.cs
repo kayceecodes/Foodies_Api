@@ -15,7 +15,7 @@ public static class UserEndpoints
     {
         app.MapGet("/api/users", async Task<IResult> (IUsersService usersService) =>
         {
-            var result = await usersService.GetUsers();
+            var result = await usersService.GetAllUsers();
 
             if (!result.IsSuccess)
             {
@@ -33,7 +33,7 @@ public static class UserEndpoints
         app.MapDelete("/api/users/{id}", async Task<IResult> (string id, IUsersService usersService) =>
         {
             Guid userId = Guid.Parse(id);
-            var result = await usersService.DeleteUser(userId);
+            var result = await usersService.DeleteUserById(userId);
 
             if (!result.IsSuccess)
             {

@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using foodies_api.Models;
 using System.Net;
 using foodies_api.Models.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace foodies_api.Endpoints;
 
@@ -17,13 +18,13 @@ public static class AuthEndpoints
     {
 
         // app.MapPost("/user", [Authorize(Policy = Identity.AdminUserPolicyName)] async ([FromServices] IMapper mapper, UserDto dto, AppContext db) =>
-        app.MapPost("/api/auth/login", async ([FromBody] LoginRequest request, AppDbContext context, IConfiguration config, IMapper mapper) =>
+        app.MapPost("/api/auth/login", async Task<IResult> ([FromBody] LoginRequest request, AppDbContext context, IConfiguration config, IMapper mapper) =>
         {
             var matchedUser = new User();
             if (!request.Email.IsNullOrEmpty())
-                matchedUser = context.Users.Where(u => u.Email == request.Email && u.Password == request.Password).FirstOrDefault();
+                matchedUser = await context.Users.Where(u => u.Email == request.Email && u.Password == request.Password).FirstOrDefaultAsync();
             else
-                matchedUser = context.Users.Where(u => u.Username == request.Username && u.Password == request.Password).FirstOrDefault();
+                matchedUser = await context.Users.Where(u => u.Username == request.Username && u.Password == request.Password).FirstOrDefaultAsync();
 
             var Auth = new Authentication(config);
             if (matchedUser == null)
@@ -43,11 +44,11 @@ public static class AuthEndpoints
         .Produces(StatusCodes.Status400BadRequest)
         .WithOpenApi();
 
-        app.MapPost("/api/auth/register", async ([FromBody] RegistrationRequest dto, AppDbContext context, IConfiguration config, IMapper mapper) =>
+        app.MapPost("/api/auth/register", async ([FromBody] RegistrationRequest request, AppDbContext context, IConfiguration config, IMapper mapper) =>
         {
             var result = new ApiResult<RegistrationRequest>();
-            bool usernameexists = context.Users.Any(user => user.Username == dto.Username);
-            bool emailexists = context.Users.Any(user => user.Email == dto.Email);
+            bool usernameexists = await context.Users.AnyAsync(user => user.Username == request.Username);
+            bool emailexists = await context.Users.AnyAsync(user => user.Email == request.Email);
 
             if (usernameexists)
                 return Results.Conflict("Username already exists");
@@ -63,7 +64,7 @@ public static class AuthEndpoints
                 return TypedResults.Ok(result);
             }
 
-            var mappedUser = mapper.Map<User>(dto);
+            var mappedUser = mapper.Map<User>(request);
             mappedUser.Id = Guid.NewGuid();
             context.Users.Add(mappedUser);
 
@@ -72,7 +73,7 @@ public static class AuthEndpoints
             var Auth = new Authentication(config);
 
             var token = Auth.CreateAccessToken(mappedUser);
-            var mappedResponse = mapper.Map<RegistrationResponse>(mappedUser);
+            var mappedResponse = mapper.Map<RegistrationResponse>(request);
             mappedResponse.Token = token;
 
             ApiResult<RegistrationResponse> response = ApiResult<RegistrationResponse>.Pass(mappedResponse);

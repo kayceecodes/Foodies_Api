@@ -10,6 +10,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace foodies_api.Repositories;
 
+/// <summary>
+/// Provides repository methods for managing user-business like relationships in the database.
+/// </summary>
 public class UsersLikeBusinessesRepository: IUsersLikeBusinessesRepository
 {
     public AppDbContext _context { get; set; }
@@ -21,6 +24,14 @@ public class UsersLikeBusinessesRepository: IUsersLikeBusinessesRepository
         _mapper = mapper;
         _logger = logger;
     }
+    
+    /// <summary>
+    /// Adds a new user-business like relationship to the database.
+    /// </summary>
+    /// <param name="userLike">The <see cref="UserLikeBusiness"/> object containing the user-business like details to add.</param>
+    /// <returns>
+    /// A <see cref="RepositoryResponse{T}"/> containing the added user-business like relationship if successful
+    /// </returns>
     public async Task<RepositoryResponse<UserLikeBusiness>> AddUserLikes(UserLikeBusiness userLike) 
     {
         try {
@@ -35,6 +46,14 @@ public class UsersLikeBusinessesRepository: IUsersLikeBusinessesRepository
         }
     }
 
+    /// <summary>
+    /// Removes a user-business like relationship from the database.
+    /// </summary>
+    /// <param name="userId">The unique identifier of the user.</param>
+    /// <param name="businessId">The unique identifier of the business.</param>
+    /// <returns>
+    /// A <see cref="RepositoryResponse{T}"/> containing the removed user-business like relationship if successful
+    /// </returns>
     public async Task<RepositoryResponse<UserLikeBusiness>> RemoveUserLikes(Guid userId, string businessId) 
     { 
         UserLikeBusiness userLike = await _context.UserLikeBusinesses.FindAsync(userId, businessId);
@@ -64,6 +83,13 @@ public class UsersLikeBusinessesRepository: IUsersLikeBusinessesRepository
         }
     }
     
+    /// <summary>
+    /// Retrieves all user-business like relationships for a specific user.
+    /// </summary>
+    /// <param name="userId">The unique identifier of the user.</param>
+    /// <returns>
+    /// A <see cref="RepositoryResponse{T}"/> containing a list of user-business like relationships if successful
+    /// </returns>
     public async Task<RepositoryResponse<List<UserLikeBusiness>>> GetUserLikesByUserId(Guid userId) 
     {        
         try

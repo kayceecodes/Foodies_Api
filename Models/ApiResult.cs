@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using foodies_api.Data;
 // using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -14,10 +15,11 @@ public class ApiResult<T>
     public T Data { get; set; }
     public HttpStatusCode StatusCode { get; set; }
     public string Message { get; set; }
-    public List<string>? ErrorMessages { get; set; }
+
+    public List<string> ErrorMessages { get; set; }
     public Exception Exception { get; set; }
 
-    public static ApiResult<T> Fail(string message, HttpStatusCode statusCode, Exception? exception)
+    public static ApiResult<T> Fail(string message, HttpStatusCode statusCode, Exception exception)
         {
             return new ApiResult<T>
             {

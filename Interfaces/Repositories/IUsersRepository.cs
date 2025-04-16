@@ -9,9 +9,9 @@ namespace foodies_api.Interfaces.Repositories
 {
     public interface IUsersRepository
     {
+        public Task<RepositoryResponse<List<User>>> GetAllUsers();
+        public Task<RepositoryResponse<User>> GetUserById(Guid userId);
         public Task<RepositoryResponse<User>> UpdateUser(Guid userId, UserUpdateRequest request);
-        public Task<RepositoryResponse<User>> DeleteUser(Guid userId);
-        public Task<RepositoryResponse<List<User>>> GetUsers();
-        public Task<RepositoryResponse<User>> GetUser(Guid userId);
+        public Task<RepositoryResponse<User>> DeleteUserById(Guid userId);
     }
 }
