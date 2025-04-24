@@ -16,9 +16,9 @@ public static class AuthEndpoints
 {
     public static void ConfigurationAuthEndpoints(this WebApplication app)
     {
-
         // app.MapPost("/user", [Authorize(Policy = Identity.AdminUserPolicyName)] async ([FromServices] IMapper mapper, UserDto dto, AppContext db) =>
-        app.MapPost("/api/auth/login", async Task<IResult> ([FromBody] LoginRequest request, AppDbContext context, IConfiguration config, IMapper mapper) =>
+        app.MapPost("/api/auth/login", async Task<IResult>
+        ([FromBody] LoginRequest request, AppDbContext context, IConfiguration config, IMapper mapper) =>
         {
             var matchedUser = new User();
             if (!request.Email.IsNullOrEmpty())
@@ -44,7 +44,8 @@ public static class AuthEndpoints
         .Produces(StatusCodes.Status400BadRequest)
         .WithOpenApi();
 
-        app.MapPost("/api/auth/register", async ([FromBody] RegistrationRequest request, AppDbContext context, IConfiguration config, IMapper mapper) =>
+        app.MapPost("/api/auth/register", async Task<IResult>
+        ([FromBody] RegistrationRequest request, AppDbContext context, IConfiguration config, IMapper mapper) =>
         {
             var result = new ApiResult<RegistrationRequest>();
             bool usernameexists = await context.Users.AnyAsync(user => user.Username == request.Username);

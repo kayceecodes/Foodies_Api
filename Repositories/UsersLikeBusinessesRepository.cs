@@ -100,7 +100,6 @@ public class UsersLikeBusinessesRepository: IUsersLikeBusinessesRepository
                      Success = true, 
                      Data = userLikes
                 };
-
         } 
         catch (Exception ex) 
         {
