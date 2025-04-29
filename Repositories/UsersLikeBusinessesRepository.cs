@@ -10,7 +10,7 @@ namespace foodies_api.Repositories;
 /// <summary>
 /// Provides repository methods for managing user-business like relationships in the database.
 /// </summary>
-public class UsersLikeBusinessesRepository: IUsersLikeBusinessesRepository
+public class UsersLikeBusinessesRepository : IUsersLikeBusinessesRepository
 {
     public AppDbContext _context { get; set; }
     public ILogger<UserLikeBusiness> _logger { get; set; }
@@ -21,7 +21,7 @@ public class UsersLikeBusinessesRepository: IUsersLikeBusinessesRepository
         _mapper = mapper;
         _logger = logger;
     }
-    
+
     /// <summary>
     /// Adds a new user-business like relationship to the database.
     /// </summary>
@@ -29,17 +29,18 @@ public class UsersLikeBusinessesRepository: IUsersLikeBusinessesRepository
     /// <returns>
     /// A <see cref="RepositoryResponse{T}"/> containing the added user-business like relationship if successful
     /// </returns>
-    public async Task<RepositoryResponse<UserLikeBusiness>> AddUserLikes(UserLikeBusiness userLike) 
+    public async Task<RepositoryResponse<UserLikeBusiness>> AddUserLikes(UserLikeBusiness userLike)
     {
-        try {
-                var result = await _context.UserLikeBusinesses.AddAsync(userLike);
-                await _context.SaveChangesAsync();
-                
-                return new RepositoryResponse<UserLikeBusiness>() { Success = true, Data = userLike, Exception = null };
-        } 
-        catch (Exception ex) 
+        try
         {
-                return new RepositoryResponse<UserLikeBusiness>() { Success = false, Exception = ex };
+            var result = await _context.UserLikeBusinesses.AddAsync(userLike);
+            await _context.SaveChangesAsync();
+
+            return new RepositoryResponse<UserLikeBusiness>() { Success = true, Data = userLike, Exception = null };
+        }
+        catch (Exception ex)
+        {
+            return new RepositoryResponse<UserLikeBusiness>() { Success = false, Exception = ex };
         }
     }
 
@@ -51,35 +52,36 @@ public class UsersLikeBusinessesRepository: IUsersLikeBusinessesRepository
     /// <returns>
     /// A <see cref="RepositoryResponse{T}"/> containing the removed user-business like relationship if successful
     /// </returns>
-    public async Task<RepositoryResponse<UserLikeBusiness>> RemoveUserLikes(Guid userId, string businessId) 
-    { 
+    public async Task<RepositoryResponse<UserLikeBusiness>> RemoveUserLikes(Guid userId, string businessId)
+    {
         UserLikeBusiness userLike = await _context.UserLikeBusinesses.FindAsync(userId, businessId);
-        
-        if(userLike == null)
-           return new RepositoryResponse<UserLikeBusiness>() 
-            { 
-                    Success = true, 
-                    Exception = new KeyNotFoundException($"Entity of type UserLikeBusiness could not be found.")
-            };            
 
-        try {
-                var result =  _context.UserLikeBusinesses.Remove(userLike); 
-                await _context.SaveChangesAsync();
-                return new RepositoryResponse<UserLikeBusiness>() 
-                {
-                     Success = true, 
-                     Exception = null, 
-                     Data = userLike,
-                     Message = $"Userlikebusiness {userLike.Username}, from {userLike.BusinessName} deleted." 
-                };
+        if (userLike == null)
+            return new RepositoryResponse<UserLikeBusiness>()
+            {
+                Success = true,
+                Exception = new KeyNotFoundException($"Entity of type UserLikeBusiness could not be found.")
+            };
+
+        try
+        {
+            var result = _context.UserLikeBusinesses.Remove(userLike);
+            await _context.SaveChangesAsync();
+            return new RepositoryResponse<UserLikeBusiness>()
+            {
+                Success = true,
+                Exception = null,
+                Data = userLike,
+                Message = $"Userlikebusiness {userLike.Username}, from {userLike.BusinessName} deleted."
+            };
 
         }
-        catch (Exception ex) 
+        catch (Exception ex)
         {
-                return new RepositoryResponse<UserLikeBusiness>() { Success = false, Exception = ex };
+            return new RepositoryResponse<UserLikeBusiness>() { Success = false, Exception = ex };
         }
     }
-    
+
     /// <summary>
     /// Retrieves all user-business like relationships for a specific user.
     /// </summary>
@@ -87,27 +89,49 @@ public class UsersLikeBusinessesRepository: IUsersLikeBusinessesRepository
     /// <returns>
     /// A <see cref="RepositoryResponse{T}"/> containing a list of user-business like relationships if successful
     /// </returns>
-    public async Task<RepositoryResponse<List<UserLikeBusiness>>> GetUserLikesByUserId(Guid userId) 
+    public async Task<RepositoryResponse<List<UserLikeBusiness>>> GetUserLikesByUserId(Guid userId)
+    {
+        try
+        {
+            var userLikes = await _context.UserLikeBusinesses
+                .Where(ub => ub.User.Id.Equals(userId))
+                .ToListAsync();
+
+            return new RepositoryResponse<List<UserLikeBusiness>>()
+            {
+                Success = true,
+                Data = userLikes
+            };
+        }
+        catch (Exception ex)
+        {
+            return new RepositoryResponse<List<UserLikeBusiness>>()
+            {
+                Success = false,
+                Exception = ex
+            };
+        }
+    }
+    public async Task<RepositoryResponse<UserLikeBusiness>> GetUserLikesById(int id) 
     {        
         try
-        {           
-                var userLikes = await _context.UserLikeBusinesses
-                    .Where(ub => ub.User.Id.Equals(userId))
-                    .ToListAsync();                
-                
-                return new RepositoryResponse<List<UserLikeBusiness>>() 
-                {
-                     Success = true, 
-                     Data = userLikes
-                };
+        {
+            var userLike = await _context.UserLikeBusinesses.FindAsync(id);
+            
+            return new RepositoryResponse<UserLikeBusiness>() 
+            {
+                    Success = true, 
+                    Data = userLike
+            };
         } 
         catch (Exception ex) 
         {
-                return new RepositoryResponse<List<UserLikeBusiness>>() 
-                { 
-                    Success = false, 
-                    Exception = ex 
-                };
+            return new RepositoryResponse<UserLikeBusiness>() 
+            { 
+                Success = false, 
+                Exception = ex 
+            };
         }
     }
+
 }

@@ -20,17 +20,18 @@ public static class UserLikeBusinessEndpoints
             IBusinessService businessService
              ) =>
         {
-            var foodiesYelpResult = await foodiesYelpService.GetBusinessById(dto.BusinessId);
-            await businessService.AddBusiness(foodiesYelpResult.Data);
+            var businessResult = await foodiesYelpService.GetBusinessById(dto.BusinessId);
+            await businessService.AddBusiness(businessResult.Data);
+
+            UserLikeBusinessDto userLikeDto = new() {};
+            //TODO: Check httpContext.User is null or where is the null ocurring
+            userLikeDto.Username = httpContext.User.FindFirst(JwtRegisteredClaimNames.Name).Value; 
+            userLikeDto.UserId = Guid.Parse(httpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            userLikeDto.BusinessId = businessResult.Data.Id;
+            userLikeDto.BusinessName = businessResult.Data.Name;
 
             ApiResult<UserLikeBusinessDto> result = await usersLikeService.AddUserLikes(
-                new UserLikeBusinessDto()
-                {
-                    UserId = Guid.Parse(httpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value),
-                    BusinessId = foodiesYelpResult.Data.Id,
-                    BusinessName = foodiesYelpResult.Data.Name,
-                    Username = httpContext.User.FindFirst(JwtRegisteredClaimNames.Name).Value
-                }
+               userLikeDto 
             );
 
             if (!result.IsSuccess)

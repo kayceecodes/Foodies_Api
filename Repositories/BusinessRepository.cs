@@ -25,7 +25,7 @@ public class BusinessRepository(AppDbContext context) : IBusinessRepository
     /// </returns>
     public async Task<RepositoryResponse<Business>> AddBusiness(Business business) 
     {
-        var businessExists = await _context.Businesses.AnyAsync(b => b.Id == business.Id );
+        var businessExists = await _context.Businesses.AnyAsync(b => b.Id == business.Id ); //TODO: See why businessExists is always true
         
         if(businessExists)
             return new RepositoryResponse<Business>() 
