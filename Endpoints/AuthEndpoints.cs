@@ -45,41 +45,47 @@ public static class AuthEndpoints
         .WithOpenApi();
 
         app.MapPost("/api/auth/register", async Task<IResult>
-        ([FromBody] RegistrationRequest request, AppDbContext context, IConfiguration config, IMapper mapper) =>
+        ([FromBody] RegisterRequest request, AuthService service, AppDbContext context, IConfiguration config, IMapper mapper) =>
         {
-            var result = new ApiResult<RegistrationRequest>();
-            bool usernameexists = await context.Users.AnyAsync(user => user.Username == request.Username);
-            bool emailexists = await context.Users.AnyAsync(user => user.Email == request.Email);
+            var result = await service.Register(request);
 
-            if (usernameexists)
-                return Results.Conflict("Username already exists");
+            if (!result.IsSuccess)
+                return TypedResults.BadRequest(result);
 
-            if (emailexists)
-            {
-                result = new ApiResult<RegistrationRequest>()
-                {
-                    IsSuccess = false,
-                    StatusCode = HttpStatusCode.Accepted,
-                    ErrorMessages = ["Email already exists, use another email"]
-                };
-                return TypedResults.Ok(result);
-            }
+            return TypedResults.BadRequest(result);
+            //var result = new ApiResult<RegisterRequest>();
+            //bool usernameexists = await context.Users.AnyAsync(user => user.Username == request.Username);
+            //bool emailexists = await context.Users.AnyAsync(user => user.Email == request.Email);
 
-            var mappedUser = mapper.Map<User>(request);
-            mappedUser.Id = Guid.NewGuid();
-            context.Users.Add(mappedUser);
+            //if (usernameexists)
+            //return Results.Conflict("Username already exists");
 
-            await context.SaveChangesAsync();
+            //if (emailexists)
+            //{
+            //result = new ApiResult<RegisterRequest>()
+            //{
+            //IsSuccess = false,
+            //StatusCode = HttpStatusCode.Accepted,
+            //ErrorMessages = ["Email already exists, use another email"]
+            //};
+            //return TypedResults.Ok(result);
+            //}
 
-            var Auth = new Authentication(config);
+            //var mappedUser = mapper.Map<User>(request);
+            //mappedUser.Id = Guid.NewGuid();
+            //context.Users.Add(mappedUser);
 
-            var token = Auth.CreateAccessToken(mappedUser);
-            var mappedResponse = mapper.Map<RegistrationResponse>(request);
-            mappedResponse.Token = token;
+            //await context.SaveChangesAsync();
 
-            ApiResult<RegistrationResponse> response = ApiResult<RegistrationResponse>.Pass(mappedResponse);
+            //var Auth = new Authentication(config);
 
-            return TypedResults.Ok(response);
+            //var token = Auth.CreateAccessToken(mappedUser);
+            //var mappedResponse = mapper.Map<RegisterResponse>(request);
+            //mappedResponse.Token = token;
+
+            //ApiResult<RegisterResponse> response = ApiResult<RegisterResponse>.Pass(mappedResponse);
+
+            //return TypedResults.Ok(response);
         })
         .WithName("Register User")
         .Accepts<string>("application/json")

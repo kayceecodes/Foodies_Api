@@ -37,6 +37,8 @@ builder.Services.AddAutoMapper(typeof(PostUserProfile), typeof(GetBusinessProfil
 
 builder.Services.AddScoped<IUsersLikeBusinessesRepository, UsersLikeBusinessesRepository>();
 builder.Services.AddScoped<IUsersLikeBusinessesService, UsersLikeBusinessesService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IBusinessService, BusinessService>();
 builder.Services.AddScoped<IBusinessRepository, BusinessRepository>();
 builder.Services.AddScoped<IUsersService, UsersService>();

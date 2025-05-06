@@ -2,7 +2,7 @@
 
 namespace foodies_api.Models.Dtos.Requests;
 
-public class RegistrationRequest
+public class RegisterRequest
 {
         [Required(ErrorMessage = "First name is required")]
         public string FirstName { get; set; }

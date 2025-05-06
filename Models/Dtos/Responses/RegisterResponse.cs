@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace foodies_api.Models.Dtos.Responses;
 
-public class RegistrationResponse
+public class RegisterResponse
 {
     public string FirstName { get; set; }
     public string LastName { get; set; }
