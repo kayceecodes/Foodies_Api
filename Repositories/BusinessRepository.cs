@@ -30,7 +30,7 @@ public class BusinessRepository(AppDbContext context) : IBusinessRepository
         if(businessExists)
             return new RepositoryResponse<Business>() 
             {
-                Success = true, 
+                Success = false, 
                 Data = business, 
                 Message = "Business already exists" 
             }; 

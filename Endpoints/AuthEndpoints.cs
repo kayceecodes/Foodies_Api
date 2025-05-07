@@ -9,6 +9,7 @@ using foodies_api.Models;
 using System.Net;
 using foodies_api.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using foodies_api.Interfaces.Services;
 
 namespace foodies_api.Endpoints;
 
@@ -18,25 +19,31 @@ public static class AuthEndpoints
     {
         // app.MapPost("/user", [Authorize(Policy = Identity.AdminUserPolicyName)] async ([FromServices] IMapper mapper, UserDto dto, AppContext db) =>
         app.MapPost("/api/auth/login", async Task<IResult>
-        ([FromBody] LoginRequest request, AppDbContext context, IConfiguration config, IMapper mapper) =>
+        ([FromBody] LoginRequest request, IAuthService service) =>
         {
-            var matchedUser = new User();
-            if (!request.Email.IsNullOrEmpty())
-                matchedUser = await context.Users.Where(u => u.Email == request.Email && u.Password == request.Password).FirstOrDefaultAsync();
-            else
-                matchedUser = await context.Users.Where(u => u.Username == request.Username && u.Password == request.Password).FirstOrDefaultAsync();
+            var result = await service.Login(request);
 
-            var Auth = new Authentication(config);
-            if (matchedUser == null)
-                return Results.NotFound("User not found.");
+            if (!result.IsSuccess)
+                return TypedResults.BadRequest(result);
 
-            var token = Auth.CreateAccessToken(matchedUser);
-            var LoginResponse = mapper.Map<LoginResponse>(matchedUser);
-            LoginResponse.Token = token;
+            return TypedResults.BadRequest(result);
+            //var matchedUser = new User();
+            //if (!request.Email.IsNullOrEmpty())
+                //matchedUser = await context.Users.Where(u => u.Email == request.Email && u.Password == request.Password).FirstOrDefaultAsync();
+            //else
+                //matchedUser = await context.Users.Where(u => u.Username == request.Username && u.Password == request.Password).FirstOrDefaultAsync();
 
-            var result = ApiResult<LoginResponse>.Pass(LoginResponse);
+            //var Auth = new Authentication(config);
+            //if (matchedUser == null)
+                //return Results.NotFound("User not found.");
 
-            return TypedResults.Ok(result);
+            //var token = Auth.CreateAccessToken(matchedUser);
+            //var LoginResponse = mapper.Map<LoginResponse>(matchedUser);
+            //LoginResponse.Token = token;
+
+            //var result = ApiResult<LoginResponse>.Pass(LoginResponse);
+
+            //return TypedResults.Ok(result);
         })
         .WithName("Login")
         .Accepts<string>("application/json")
@@ -45,14 +52,14 @@ public static class AuthEndpoints
         .WithOpenApi();
 
         app.MapPost("/api/auth/register", async Task<IResult>
-        ([FromBody] RegisterRequest request, AuthService service, AppDbContext context, IConfiguration config, IMapper mapper) =>
+        ([FromBody] RegisterRequest request, IAuthService service, AppDbContext context, IConfiguration config, IMapper mapper) =>
         {
             var result = await service.Register(request);
 
             if (!result.IsSuccess)
                 return TypedResults.BadRequest(result);
 
-            return TypedResults.BadRequest(result);
+            return TypedResults.Ok(result);
             //var result = new ApiResult<RegisterRequest>();
             //bool usernameexists = await context.Users.AnyAsync(user => user.Username == request.Username);
             //bool emailexists = await context.Users.AnyAsync(user => user.Email == request.Email);

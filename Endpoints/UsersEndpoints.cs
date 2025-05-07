@@ -1,10 +1,7 @@
-using foodies_api.Data;
 using foodies_api.Models;
 using Microsoft.AspNetCore.Mvc;
 using foodies_api.Models.Entities;
 using foodies_api.Models.Dtos.Requests;
-using Microsoft.EntityFrameworkCore;
-using System.Net;
 using foodies_api.Interfaces.Services;
 
 namespace foodies_api.Endpoints;

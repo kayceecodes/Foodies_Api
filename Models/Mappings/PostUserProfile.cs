@@ -15,6 +15,8 @@ public class PostUserProfile : Profile
         // CreateMap<UserDto, User>()
         // .ForMember(dest => dest.FirstAndLastName, src => src.MapFrom(x => x.FirstName + " " + x.LastName));
 
+        CreateMap<User, RegisterResponse>();
+
         CreateMap<RegisterRequest, RegisterResponse>();
         // CreateMap<User, UserDto>()
         // .ForMember(dest => dest.FirstName, src => src.MapFrom<FirstNameResolver>())

@@ -32,7 +32,7 @@ public class AuthService : IAuthService
             { 
                 IsSuccess = false, 
                 StatusCode = HttpStatusCode.BadRequest, 
-                ErrorMessages = ["Couldn't register user"] 
+                ErrorMessages =  [result.Message] 
             };
         }
         var registerResponse = _mapper.Map<RegisterResponse>(result.Data);
@@ -52,7 +52,7 @@ public class AuthService : IAuthService
             { 
                 IsSuccess = false, 
                 StatusCode = HttpStatusCode.BadRequest, 
-                ErrorMessages = ["Couldn't login user"] 
+                ErrorMessages = [result.Message] 
             };
         }
  

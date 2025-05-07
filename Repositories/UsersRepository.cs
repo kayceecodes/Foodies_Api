@@ -69,7 +69,7 @@ namespace foodies_api.Repositories
                     return new RepositoryResponse<User>()
                     {
                         Success = false,
-                        Exception = new Exception("User not found")
+                        Message = "User not found"
                     };
                 }
                 return new RepositoryResponse<User>()
@@ -147,7 +147,7 @@ namespace foodies_api.Repositories
                     return new RepositoryResponse<User>()
                     {
                         Success = false,
-                        Exception = new Exception("User not found")
+                        Message = "User not found"
                     };
                 }
 

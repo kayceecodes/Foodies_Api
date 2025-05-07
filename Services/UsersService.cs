@@ -42,7 +42,7 @@ namespace foodies_api.Services
                 { 
                     IsSuccess = false, 
                     StatusCode = HttpStatusCode.BadRequest, 
-                    ErrorMessages = [$"Couldn't get any Users"],
+                    ErrorMessages = [result.Message],
                     Exception = result.Exception 
                 };
             }
@@ -69,7 +69,7 @@ namespace foodies_api.Services
                 { 
                     IsSuccess = false, 
                     StatusCode = HttpStatusCode.BadRequest, 
-                    ErrorMessages = [$"Couldn't get user with ID {userId}"]
+                    ErrorMessages = [result.Message]
                 };
             }
 
@@ -95,7 +95,7 @@ namespace foodies_api.Services
                 { 
                     IsSuccess = false, 
                     StatusCode = HttpStatusCode.BadRequest, 
-                    ErrorMessages = [$"Couldn't delete user with ID {userId}"] 
+                    ErrorMessages = [result.Message] 
                 };
             }
 
