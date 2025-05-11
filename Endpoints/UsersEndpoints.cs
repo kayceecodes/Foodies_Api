@@ -8,7 +8,7 @@ namespace foodies_api.Endpoints;
 
 public static class UserEndpoints
 {
-    public static void ConfigurationUserEndpoints(this WebApplication app)
+    public static void ConfigUserEndpoints(this WebApplication app)
     {
         app.MapGet("/api/users", async Task<IResult> (IUsersService usersService) =>
         {

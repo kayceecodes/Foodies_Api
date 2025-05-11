@@ -17,7 +17,6 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var AllowLocalDevelopment = "AllowLocalDevelopment";
 
-// var conn = configuration.GetConnectionString("DefaultConnection"); //
 var conn = configuration["DbConnection"];
 
 var CorsPolicies = new Action<CorsPolicyBuilder>(policy =>
@@ -92,9 +91,9 @@ app.UseSwaggerUI(options =>
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.ConfigurationUserLikeBusinessEndpoints();
-app.ConfigurationAuthEndpoints();
-app.ConfigurationUserEndpoints();
+app.ConfigUserLikeEndpoints();
+app.ConfigAuthEndpoints();
+app.ConfigUserEndpoints();
 
 app.UseCors(AllowLocalDevelopment);
 

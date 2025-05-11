@@ -1,6 +1,5 @@
 using foodies_api.Data;
 using foodies_api.Interfaces.Repositories;
-using foodies_api.Models;
 using foodies_api.Models.Dtos.Requests;
 using foodies_api.Models.Dtos.Responses;
 using foodies_api.Models.Entities;

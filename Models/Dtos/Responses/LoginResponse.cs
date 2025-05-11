@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 
 namespace foodies_api.Models.Dtos.Responses;
 

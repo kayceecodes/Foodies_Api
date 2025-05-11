@@ -14,11 +14,12 @@ public class AuthService : IAuthService
     public IMapper _mapper;
     public IAuthRepository _repository;
     public IConfiguration _config;
-    public AuthService(ILogger<AuthService> logger, IMapper mapper, IAuthRepository repository)
+    public AuthService(ILogger<AuthService> logger, IMapper mapper, IAuthRepository repository, IConfiguration config)
     {
         _logger = logger;
         _mapper = mapper;
         _repository = repository;
+        _config = config;
     }
     public async Task<ApiResult<RegisterResponse>> Register(RegisterRequest request)
     {

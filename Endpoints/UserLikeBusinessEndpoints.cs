@@ -10,7 +10,7 @@ namespace foodies_api.Endpoints;
 
 public static class UserLikeBusinessEndpoints
 {
-    public static void ConfigurationUserLikeBusinessEndpoints(this WebApplication app)
+    public static void ConfigUserLikeEndpoints(this WebApplication app)
     {
         app.MapPost("/api/userlikebusinesses/", [Authorize] async Task<IResult> (
             [FromBody] UserLikeBusinessDto dto,
@@ -58,7 +58,7 @@ public static class UserLikeBusinessEndpoints
             if (!result.IsSuccess)
                 return TypedResults.BadRequest(result.ErrorMessages);
 
-            return TypedResults.Ok<ApiResult<UserLikeBusinessDto>>(result);
+            return TypedResults.Ok(result);
 
         })
         .WithName("RemoveUsersLikeBusinessse")
@@ -77,7 +77,7 @@ public static class UserLikeBusinessEndpoints
             if (!result.IsSuccess)
                 return TypedResults.BadRequest(result.ErrorMessages);
 
-            return TypedResults.Ok<ApiResult<List<UserLikeBusinessDto>>>(result);
+            return TypedResults.Ok(result);
 
         })
         .WithName("GetUserLikeBusinesses")
