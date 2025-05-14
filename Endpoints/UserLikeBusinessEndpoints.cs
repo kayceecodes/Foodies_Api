@@ -23,28 +23,26 @@ public static class UserLikeBusinessEndpoints
             var businessResult = await foodiesYelpService.GetBusinessById(dto.BusinessId);
             await businessService.AddBusiness(businessResult.Data);
 
-            UserLikeBusinessDto userLikeDto = new() {};
-            //TODO: Check httpContext.User is null or where is the null ocurring
-            userLikeDto.Username = httpContext.User.FindFirst(JwtRegisteredClaimNames.Name).Value; 
-            userLikeDto.UserId = Guid.Parse(httpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            userLikeDto.BusinessId = businessResult.Data.Id;
-            userLikeDto.BusinessName = businessResult.Data.Name;
+            UserLikeBusinessDto userLikeDto = new()
+            {
+                Username = httpContext.User.FindFirst(ClaimTypes.Name).Value,
+                UserId = Guid.Parse(httpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value),
+                BusinessId = businessResult.Data.Id,
+                BusinessName = businessResult.Data.Name,
+            };
 
-            ApiResult<UserLikeBusinessDto> result = await usersLikeService.AddUserLikes(
-               userLikeDto 
-            );
-
+            var result = await usersLikeService.AddUserLikes(userLikeDto);
             if (!result.IsSuccess)
                 return TypedResults.BadRequest(result.ErrorMessages);
 
-            return TypedResults.Ok($"Added NAME: {result.Data.BusinessName}, ID: {result.Data.BusinessId} to Businesses.");
+            return TypedResults.Ok(result);
 
         })
         .WithName("AddUsersLikeBusinessses")
         .Accepts<UserLikeBusinessDto>("application/json")
         .Produces<ApiResult<List<UserLikeBusinessDto>>>(StatusCodes.Status201Created)
         .Produces(StatusCodes.Status400BadRequest)
-        .Produces(StatusCodes.Status401Unauthorized);        
+        .Produces(StatusCodes.Status401Unauthorized);
 
         app.MapDelete("/api/userlikebusinesses/{businessId}", [Authorize] async Task<IResult> (
             string businessId,
