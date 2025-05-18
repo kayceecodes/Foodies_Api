@@ -1,48 +1,40 @@
-#      - ConnectionStrings__DefaultConnection=User ID=postgres;Password=postgres;Server=app_db;Port=5432;Database=FoodiesApiDb; IntegratedSecurity=true;Pooling=true;
 services:
-  # foodies_api:
-  #   image: kayceecode/foodiesapi
-  #   container_name: foodiesapi_container
-  #   environment:
-  #     - ASPNETCORE_ENVIRONMENT=Production
-  #     - DB_HOST=postgres
-  #     - DB_PORT=5432
-  #     - DB_USER=${POSTGRES_USER}
-  #     - DB_PASSWORD_FILE=/run/secrets/postgres_password
-  #     - DB_NAME=${POSTGRES_DB}
-  #     - ConnectionStrings__DefaultConnection=Host=${DB_HOST};Port=${DB_PORT};Username=${DB_USER};Password_FILE=${DB_PASSWORD_FILE};Database=${DB_NAME}
-  #   ports:
-  #     - "8082:8080"
-  #   depends_on:
-  #     - db
-  #   volumes:
-  #     - /run/secrets/postgres-passwd:/run/secrets/postgres-passwd
-  #   secrets:
-  #     - postgres-passwd
-
-  db:
-    image: postgres
-    container_name: foodiesapidb
+  foodies-api:
+    image: kayceecode/foodies-api
+    container_name: foodies-api-container
     environment:
-      PGUSER: postgres
-      POSTGRES_PASSWORD_FILE: /run/secrets/postgres-passwd  # Using the secret for the password
+      - ASPNETCORE_ENVIRONMENT=Production
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_NAME=${DB_NAME}
+    ports:
+      - "8082:8080"
+    depends_on:
+      - db
+    secrets:
+      - postgres-passwd
+
+  foodies-api-db:
+    image: postgres
+    container_name: foodies-api-db-container
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres-passwd
+      POSTGRES_USER: postgres
+      POSTGRES_DB: foodiesapidb
     secrets:
       - postgres-passwd
     volumes:
       - db-data:/var/lib/postgresql/data
-      - ./secrets/postgres-passwd.txt:/run/secrets/postgres-passwd
     ports:
       - "5430:5432"
-    restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
       interval: 1s
       timeout: 5s
-      retries: 10
 
 volumes:
   db-data:
-
 secrets:
   postgres-passwd:
-    file: ./postgres-passwd.txt
+    external: true

@@ -1,4 +1,3 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using foodies_api.Interfaces.Services;
 using foodies_api.Models;

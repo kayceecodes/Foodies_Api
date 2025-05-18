@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using foodies_api.Utils;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +19,20 @@ var configuration = builder.Configuration;
 var AllowLocalDevelopment = "AllowLocalDevelopment";
 
 var conn = configuration["DbConnection"];
+string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
+var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
+var dbPort = Environment.GetEnvironmentVariable("DB_PORT");
+var dbUser = Environment.GetEnvironmentVariable("DB_USER");
+var dbName = Environment.GetEnvironmentVariable("DB_NAME");
+var dbPassword = File.ReadAllText("/run/secrets/postgres-passwd").Trim();
+
+if (environment == "Production")
+{
+    conn = $"Host={dbHost};Port={dbPort};User ID=postgres;Password={dbPassword};Database={dbName};Pooling=true;";
+    //conn = $"Host={dbHost};Port={dbPort};Username={dbUser};Password={dbPassword};Database={dbName};Pooling=true";
+    builder.Configuration["ConnectionStrings:DefaultConnection"] = conn;
+}
 
 var CorsPolicies = new Action<CorsPolicyBuilder>(policy =>
 {
@@ -79,6 +94,8 @@ builder.Services.AddAuthorization(options =>
 });
 
 var app = builder.Build();
+
+app.UseGlobalExceptionHandler();
 
 app.UseSwagger();
 app.UseSwaggerUI(options =>
