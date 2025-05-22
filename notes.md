@@ -15,3 +15,4 @@
 * DbContext classes
 * Placeholders were given in my docker compose's environment variables, they weren't referencing anything nor was docker automatically reading from the .env file.
     * Ex: DB_NAME={DB_NAME}
+* After adding another dbcontext derived class in the directory of dbcontext classes you have to run 'dotnet ef migrations add -c <dbcontext name>' to add it.
