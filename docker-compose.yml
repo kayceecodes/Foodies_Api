@@ -1,12 +1,8 @@
 services:
   foodies-api:
     image: kayceecode/foodies-api
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - DB_HOST=foodies-api-db
-      - DB_PORT=5432
-      - DB_USER=postgres
-      - DB_NAME=foodiesapidb
+    env_file:
+      - .env
     ports:
       - "8082:8080"
     depends_on:
@@ -16,7 +12,6 @@ services:
 
   foodies-api-db:
     image: postgres
-    container_name: foodies-api-db-container
     environment:
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres-passwd
       POSTGRES_USER: postgres

@@ -25,12 +25,11 @@ var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
 var dbPort = Environment.GetEnvironmentVariable("DB_PORT");
 var dbUser = Environment.GetEnvironmentVariable("DB_USER");
 var dbName = Environment.GetEnvironmentVariable("DB_NAME");
-var dbPassword = File.ReadAllText("/run/secrets/postgres-passwd").Trim();
 
 if (environment == "Production")
 {
+    var dbPassword = File.ReadAllText("/run/secrets/postgres-passwd").Trim();
     conn = $"Host={dbHost};Port={dbPort};User ID=postgres;Password={dbPassword};Database={dbName};Pooling=true;";
-    //conn = $"Host={dbHost};Port={dbPort};Username={dbUser};Password={dbPassword};Database={dbName};Pooling=true";
     builder.Configuration["ConnectionStrings:DefaultConnection"] = conn;
 }
 
@@ -46,6 +45,7 @@ var CorsPolicies = new Action<CorsPolicyBuilder>(policy =>
 builder.Services.AddCors(options => options.AddPolicy(name: AllowLocalDevelopment, CorsPolicies));
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(conn));
+builder.Services.AddDbContext<DevAppDbContext>();
 
 builder.Services.AddAutoMapper(typeof(PostUserProfile), typeof(GetBusinessProfile), typeof(PostUserLikeBusinessProfile));
 
@@ -86,7 +86,7 @@ builder.Services.AddAuthentication("Bearer")
             ValidateIssuerSigningKey = true,
         };
     });
-    
+
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(Identity.AdminUserPolicyName, p =>
