@@ -12,7 +12,7 @@ public static class AuthEndpoints
 {
     public static void ConfigAuthEndpoints(this WebApplication app)
     {
-        app.MapPost("/api/auth/login", async Task<IResult>
+        app.MapPost("/api/login", async Task<IResult>
         ([FromBody] LoginRequest request, IAuthService service) =>
         {
             var result = await service.Login(request);
@@ -28,7 +28,7 @@ public static class AuthEndpoints
         .Produces(StatusCodes.Status400BadRequest)
         .WithOpenApi();
 
-        app.MapPost("/api/auth/register", async Task<IResult>
+        app.MapPost("/api/register", async Task<IResult>
         ([FromBody] RegisterRequest request, IAuthService service, AppDbContext context, IConfiguration config, IMapper mapper) =>
         {
             var result = await service.Register(request);

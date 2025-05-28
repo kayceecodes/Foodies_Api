@@ -3,12 +3,15 @@ services:
     image: kayceecode/foodies-api
     env_file:
       - .env
+    environment:
+      - JWT_SECRET_FILE=/run/secrets/jwt-secret
     ports:
       - "8082:8080"
     depends_on:
       - foodies-api-db
     secrets:
       - postgres-passwd
+      - jwt-secret
 
   foodies-api-db:
     image: postgres
@@ -29,6 +32,9 @@ services:
 
 volumes:
   db-data:
+
 secrets:
   postgres-passwd:
+    external: true
+  jwt-secret:
     external: true

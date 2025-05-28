@@ -18,19 +18,21 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var AllowLocalDevelopment = "AllowLocalDevelopment";
 
-var conn = configuration["DbConnection"];
+var conn = configuration["ConnectionStrings:DefaultConnection"];
 string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
-var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
-var dbPort = Environment.GetEnvironmentVariable("DB_PORT");
-var dbUser = Environment.GetEnvironmentVariable("DB_USER");
-var dbName = Environment.GetEnvironmentVariable("DB_NAME");
-
+// Production in Docker container
 if (environment == "Production")
 {
+    var jwtKey = File.ReadAllText("/run/secrets/jwt-secret").Trim();
+    var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
+    var dbPort = Environment.GetEnvironmentVariable("DB_PORT");
+    var dbUser = Environment.GetEnvironmentVariable("DB_USER");
+    var dbName = Environment.GetEnvironmentVariable("DB_NAME");
     var dbPassword = File.ReadAllText("/run/secrets/postgres-passwd").Trim();
     conn = $"Host={dbHost};Port={dbPort};User ID=postgres;Password={dbPassword};Database={dbName};Pooling=true;";
     builder.Configuration["ConnectionStrings:DefaultConnection"] = conn;
+    builder.Configuration["JwtSettings:Key"] = jwtKey;
 }
 
 var CorsPolicies = new Action<CorsPolicyBuilder>(policy =>
@@ -79,7 +81,7 @@ builder.Services.AddAuthentication("Bearer")
             ValidIssuer = configuration["JwtSettings:Issuer"],
             ValidAudience = configuration["JwtSettings:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"])),
+                Encoding.UTF8.GetBytes(configuration["JwtSettings:Key"])),
             ValidateIssuer = true,
             ValidateAudience = false,
             ValidateLifetime = true,
