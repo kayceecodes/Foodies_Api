@@ -22,15 +22,36 @@ var conn = configuration["ConnectionStrings:DefaultConnection"];
 string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
 // Production in Docker container
+// Helper to ensure env var exists
+string GetRequiredEnv(string name)
+{
+    var value = Environment.GetEnvironmentVariable(name);
+    if (string.IsNullOrWhiteSpace(value))
+        throw new InvalidOperationException($"Environment variable '{name}' is not set.");
+    return value;
+}
+
+// Helper to ensure secret file exists and is readable
+string GetRequiredSecret(string path, string name)
+{
+    if (!File.Exists(path))
+        throw new FileNotFoundException($"Required secret '{name}' not found at path '{path}'.");
+    var value = File.ReadAllText(path).Trim();
+    if (string.IsNullOrWhiteSpace(value))
+        throw new InvalidOperationException($"Secret '{name}' in file '{path}' is empty or invalid.");
+    return value;
+}
+
 if (environment == "Production")
 {
-    var jwtKey = File.ReadAllText("/run/secrets/jwt-secret").Trim();
-    var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
-    var dbPort = Environment.GetEnvironmentVariable("DB_PORT");
-    var dbUser = Environment.GetEnvironmentVariable("DB_USER");
-    var dbName = Environment.GetEnvironmentVariable("DB_NAME");
-    var dbPassword = File.ReadAllText("/run/secrets/postgres-passwd").Trim();
-    conn = $"Host={dbHost};Port={dbPort};User ID=postgres;Password={dbPassword};Database={dbName};Pooling=true;";
+    var jwtKey = GetRequiredSecret("/run/secrets/jwt-secret", "JwtSettings:Key");
+    var dbHost = GetRequiredEnv("DB_HOST");
+    var dbPort = GetRequiredEnv("DB_PORT");
+    var dbUser = GetRequiredEnv("DB_USER");
+    var dbName = GetRequiredEnv("DB_NAME");
+    var dbPassword = GetRequiredSecret("/run/secrets/postgres-passwd", "Database Password");
+
+    conn = $"Host={dbHost};Port={dbPort};User ID={dbUser};Password={dbPassword};Database={dbName};Pooling=true;";
     builder.Configuration["ConnectionStrings:DefaultConnection"] = conn;
     builder.Configuration["JwtSettings:Key"] = jwtKey;
 }
