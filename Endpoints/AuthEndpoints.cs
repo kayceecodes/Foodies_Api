@@ -5,6 +5,7 @@ using foodies_api.Models.Dtos.Requests;
 using foodies_api.Models;
 using foodies_api.Models.Entities;
 using foodies_api.Interfaces.Services;
+using foodies_api.Models.Dtos.Responses;
 
 namespace foodies_api.Endpoints;
 
@@ -47,11 +48,8 @@ public static class AuthEndpoints
         app.MapPost("/api/logout", async Task<IResult>
         ([FromBody] IAuthService service, HttpContext context) =>
         {
-            var result = await service.Logout();
-
-            if (!result.IsSuccess)
-                return TypedResults.BadRequest(result);
-
+            context.Response.Cookies.Delete("jwt");
+            var result = new ApiResult<LogoutResponse>() { Message = "Logged out" };
             return TypedResults.Ok(result);
         })
         .WithName("Register User")

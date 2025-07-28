@@ -15,7 +15,10 @@
 * DbContext classes
 * Placeholders were given in my docker compose's environment variables, they weren't referencing anything nor was docker automatically reading from the .env file.
     * Ex: DB_NAME={DB_NAME}
-* After adding another dbcontext derived class in the directory of dbcontext classes you have to run 'dotnet ef migrations add -c <dbcontext name>' to add it.
+* After adding another dbcontext derived class in the directory of dbcontext classes you have to run 'dotnet ef migrations add -c \<name of dbcontext class\>' to add it.
 
 *5-22-2025*
 * Docker containers can hold jwt key secrets within the app's container. Make the env variable in docker-compose's app service then reference it anywhere in the app ie Environment.GetVariable("JWT_SECRET_FILE").
+
+*7-11-2025*
+* HttpOnly cookies are only accessed by the backend. The browser handles it when it comes to the client making calls, so with every call the browser is giving the backend server the token for Authorization.

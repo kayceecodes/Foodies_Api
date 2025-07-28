@@ -26,14 +26,14 @@ public class AuthService : IAuthService
         var user = _mapper.Map<User>(request);
         var result = await _repository.Register(user);
 
-        if(!result.Success)
+        if (!result.Success)
         {
             _logger.LogError("Failed to register user");
-            return new ApiResult<RegisterResponse> 
-            { 
-                IsSuccess = false, 
-                StatusCode = HttpStatusCode.BadRequest, 
-                ErrorMessages =  [result.Message] 
+            return new ApiResult<RegisterResponse>
+            {
+                IsSuccess = false,
+                StatusCode = HttpStatusCode.BadRequest,
+                ErrorMessages = [result.Message]
             };
         }
         var registerResponse = _mapper.Map<RegisterResponse>(result.Data);
@@ -45,6 +45,30 @@ public class AuthService : IAuthService
     public async Task<ApiResult<LoginResponse>> Login(LoginRequest request)
     {
         var result = await _repository.Login(request);
+
+        if (!result.Success)
+        {
+            _logger.LogError("Failed to login user");
+            return new ApiResult<LoginResponse>
+            {
+                IsSuccess = false,
+                StatusCode = HttpStatusCode.BadRequest,
+                ErrorMessages = [result.Message]
+            };
+        }
+
+        var Auth = new Authentication(_config);
+        var token = Auth.CreateAccessToken(result.Data);
+        var loginResponse = _mapper.Map<LoginResponse>(result.Data);
+        loginResponse.Token = token;
+
+        _logger.LogInformation("Successfully logged in");
+        return new ApiResult<LoginResponse> { Data = loginResponse, IsSuccess = true, StatusCode = HttpStatusCode.OK };
+    }    
+
+    public async Task<ApiResult<LoginResponse>> Logout()
+    {
+        var result = await _repository.Login();
 
         if(!result.Success)
         {
@@ -64,5 +88,5 @@ public class AuthService : IAuthService
 
        _logger.LogInformation("Successfully logged in");
         return new ApiResult<LoginResponse> { Data = loginResponse, IsSuccess = true, StatusCode = HttpStatusCode.OK };
-    }    
+    }   
 }

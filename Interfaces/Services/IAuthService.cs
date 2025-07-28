@@ -8,4 +8,5 @@ public interface IAuthService
 {
     public Task<ApiResult<RegisterResponse>> Register(RegisterRequest request);
     public Task<ApiResult<LoginResponse>> Login(LoginRequest request);
+    public Task<ApiResult<LogoutResponse>> Logout();
 }
