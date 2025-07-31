@@ -6,6 +6,7 @@ using foodies_api.Models;
 using foodies_api.Models.Entities;
 using foodies_api.Interfaces.Services;
 using foodies_api.Models.Dtos.Responses;
+using Microsoft.AspNetCore.Http;
 
 namespace foodies_api.Endpoints;
 
@@ -14,12 +15,21 @@ public static class AuthEndpoints
     public static void ConfigAuthEndpoints(this WebApplication app)
     {
         app.MapPost("/api/login", async Task<IResult>
-        ([FromBody] LoginRequest request, IAuthService service) =>
+        ([FromBody] LoginRequest request, IAuthService service, HttpContext httpContext) =>
         {
             var result = await service.Login(request);
-
+        
             if (!result.IsSuccess)
                 return TypedResults.BadRequest(result);
+
+            // Set the cookie here (presentation layer)
+            httpContext.Response.Cookies.Append("jwt", result.Data.Token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTimeOffset.UtcNow.AddHours(1)
+            });
 
             return TypedResults.Ok(result);
         })

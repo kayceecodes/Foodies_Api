@@ -66,14 +66,14 @@ public class AuthService : IAuthService
         return new ApiResult<LoginResponse> { Data = loginResponse, IsSuccess = true, StatusCode = HttpStatusCode.OK };
     }    
 
-    public async Task<ApiResult<LoginResponse>> Logout()
+    public async Task<ApiResult<LogoutResponse>> Logout()
     {
-        var result = await _repository.Login();
+        var result = await _repository.Logout();
 
         if(!result.Success)
         {
-            _logger.LogError("Failed to login user");
-            return new ApiResult<LoginResponse> 
+            _logger.LogError("Failed to logout user");
+            return new ApiResult<LogoutResponse> 
             { 
                 IsSuccess = false, 
                 StatusCode = HttpStatusCode.BadRequest, 
@@ -81,12 +81,7 @@ public class AuthService : IAuthService
             };
         }
  
-        var Auth = new Authentication(_config);
-        var token = Auth.CreateAccessToken(result.Data);
-        var loginResponse = _mapper.Map<LoginResponse>(result.Data);
-        loginResponse.Token = token;
-
        _logger.LogInformation("Successfully logged in");
-        return new ApiResult<LoginResponse> { Data = loginResponse, IsSuccess = true, StatusCode = HttpStatusCode.OK };
+        return new ApiResult<LogoutResponse> { IsSuccess = true, StatusCode = HttpStatusCode.OK };
     }   
 }
