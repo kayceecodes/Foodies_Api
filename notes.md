@@ -21,4 +21,8 @@
 * Docker containers can hold jwt key secrets within the app's container. Make the env variable in docker-compose's app service then reference it anywhere in the app ie Environment.GetVariable("JWT_SECRET_FILE").
 
 *7-11-2025*
-* HttpOnly cookies are only accessed by the backend. The browser handles it when it comes to the client making calls, so with every call the browser is giving the backend server the token for Authorization.
+* HttpOnly cookies are only accessed by the backend. The browser handles it when it comes to the client making calls, so with every call the browser is giving the backend server the token for Authorization. 
+
+*7-30-2025*
+* When logging out, removing the cookie from the client isn't sufficient. Especially if it's an HttpOnly cookie (HttpOnly: true, in header) since Javascript cannot touch nor delete the HttpOnly cookies from the client. Also, since you can't remove the cookie, the client will still send the cookie with each request. So it's important to remove the cookie from the backend.
+* When logging in, it's import to set 'Path' to "/" under the CookieOptions object. So that the browser uses that cookie for every endpoint. By default it may choose the route that is declaring the CookieOptions, i.e. "/api/login", which is incorrect. So remove the cookie with the same exact CookieOptions properties.

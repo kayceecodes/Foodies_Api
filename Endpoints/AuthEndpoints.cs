@@ -6,7 +6,6 @@ using foodies_api.Models;
 using foodies_api.Models.Entities;
 using foodies_api.Interfaces.Services;
 using foodies_api.Models.Dtos.Responses;
-using Microsoft.AspNetCore.Http;
 
 namespace foodies_api.Endpoints;
 
@@ -22,7 +21,6 @@ public static class AuthEndpoints
             if (!result.IsSuccess)
                 return TypedResults.BadRequest(result);
 
-            // Set the cookie here (presentation layer)
             httpContext.Response.Cookies.Append("jwt", result.Data.Token, new CookieOptions
             {
                 HttpOnly = true,
@@ -49,7 +47,7 @@ public static class AuthEndpoints
 
             return TypedResults.Ok(result);
         })
-        .WithName("Register User")
+        .WithName("Register")
         .Accepts<string>("application/json")
         .Produces<ApiResult<List<User>>>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status400BadRequest)
@@ -58,11 +56,17 @@ public static class AuthEndpoints
         app.MapPost("/api/logout", async Task<IResult>
         ([FromBody] IAuthService service, HttpContext context) =>
         {
-            context.Response.Cookies.Delete("jwt");
+            context.Response.Cookies.Delete("jwt", new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Path = "/" // recommended to include explicitly
+            });
             var result = new ApiResult<LogoutResponse>() { Message = "Logged out" };
             return TypedResults.Ok(result);
         })
-        .WithName("Register User")
+        .WithName("Logout")
         .Accepts<string>("application/json")
         .Produces<ApiResult<List<User>>>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status400BadRequest)

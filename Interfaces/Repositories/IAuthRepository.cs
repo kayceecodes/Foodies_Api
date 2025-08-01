@@ -11,5 +11,4 @@ public interface IAuthRepository
 {
     Task<RepositoryResponse<User>> Login(LoginRequest loginRequest);
     Task<RepositoryResponse<User>> Register(User user);
-    Task<RepositoryResponse<User>> Logout();
 }

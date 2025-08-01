@@ -68,20 +68,9 @@ public class AuthService : IAuthService
 
     public async Task<ApiResult<LogoutResponse>> Logout()
     {
-        var result = await _repository.Logout();
 
-        if(!result.Success)
-        {
-            _logger.LogError("Failed to logout user");
-            return new ApiResult<LogoutResponse> 
-            { 
-                IsSuccess = false, 
-                StatusCode = HttpStatusCode.BadRequest, 
-                ErrorMessages = [result.Message] 
-            };
-        }
- 
-       _logger.LogInformation("Successfully logged in");
+
+       _logger.LogInformation("Successfully logged out");
         return new ApiResult<LogoutResponse> { IsSuccess = true, StatusCode = HttpStatusCode.OK };
     }   
 }
