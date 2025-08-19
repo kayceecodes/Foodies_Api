@@ -6,6 +6,7 @@ using foodies_api.Models;
 using foodies_api.Models.Entities;
 using foodies_api.Interfaces.Services;
 using foodies_api.Models.Dtos.Responses;
+using System.Net;
 
 namespace foodies_api.Endpoints;
 
@@ -21,13 +22,15 @@ public static class AuthEndpoints
             if (!result.IsSuccess)
                 return TypedResults.BadRequest(result);
 
-            httpContext.Response.Cookies.Append("jwt", result.Data.Token, new CookieOptions
+            httpContext.Response.Cookies.Append("auth-token", result.Data.Token, new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.Strict,
                 Expires = DateTimeOffset.UtcNow.AddHours(1)
             });
+
+            result.Data.Token = null;
 
             return TypedResults.Ok(result);
         })
@@ -38,13 +41,24 @@ public static class AuthEndpoints
         .WithOpenApi();
 
         app.MapPost("/api/register", async Task<IResult>
-        ([FromBody] RegisterRequest request, IAuthService service, AppDbContext context, IConfiguration config, IMapper mapper) =>
+        ([FromBody] RegisterRequest request, IAuthService service, HttpContext httpContext) =>
         {
             var result = await service.Register(request);
 
             if (!result.IsSuccess)
                 return TypedResults.BadRequest(result);
 
+            // Set HttpOnly cookie (auto-login after registration)
+            httpContext.Response.Cookies.Append("auth-token", result.Data.Token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTimeOffset.UtcNow.AddHours(1)
+            });
+
+            result.Data.Token = null;
+            
             return TypedResults.Ok(result);
         })
         .WithName("Register")
@@ -56,14 +70,16 @@ public static class AuthEndpoints
         app.MapPost("/api/logout", async Task<IResult>
         ([FromBody] IAuthService service, HttpContext context) =>
         {
-            context.Response.Cookies.Delete("jwt", new CookieOptions
+            context.Response.Cookies.Delete("auth-token", new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.Strict,
                 Path = "/" // recommended to include explicitly
             });
+
             var result = new ApiResult<LogoutResponse>() { Message = "Logged out" };
+            
             return TypedResults.Ok(result);
         })
         .WithName("Logout")
