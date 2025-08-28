@@ -18,41 +18,25 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var AllowLocalDevelopment = "AllowLocalDevelopment";
 
-var conn = configuration["ConnectionStrings:DefaultConnection"];
+var connectionstring = configuration["ConnectionStrings:DefaultConnection"];
 string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
-// Production in Docker container
-// Helper to ensure env var exists
-string GetRequiredEnv(string name)
+if (environment == "Production") // Production in Docker read from files
 {
-    var value = Environment.GetEnvironmentVariable(name);
-    if (string.IsNullOrWhiteSpace(value))
-        throw new InvalidOperationException($"Environment variable '{name}' is not set.");
-    return value;
-}
+    var dbConnFile = builder.Configuration["DB_CONNECTION_FILE"];
+    if (string.IsNullOrEmpty(dbConnFile) || !File.Exists(dbConnFile))
+    {
+        throw new Exception("DB_CONNECTION_FILE is not set or file not found");
+    }
+    connectionstring = File.ReadAllText(dbConnFile).Trim();
 
-// Helper to ensure secret file exists and is readable
-string GetRequiredSecret(string path, string name)
-{
-    if (!File.Exists(path))
-        throw new FileNotFoundException($"Required secret '{name}' not found at path '{path}'.");
-    var value = File.ReadAllText(path).Trim();
-    if (string.IsNullOrWhiteSpace(value))
-        throw new InvalidOperationException($"Secret '{name}' in file '{path}' is empty or invalid.");
-    return value;
-}
+    var jwtKeySecretFile = builder.Configuration["JWT_KEY_SECRET_FILE"];
+    if (string.IsNullOrEmpty(jwtKeySecretFile) || !File.Exists(jwtKeySecretFile))
+    {
+        throw new Exception("JWT_KEY_SECRET_FILE is not set or file not found");
+    }
 
-if (environment == "Production")
-{
-    var jwtKey = GetRequiredSecret("/run/secrets/jwt-secret", "JwtSettings:Key");
-    var dbHost = GetRequiredEnv("DB_HOST");
-    var dbPort = GetRequiredEnv("DB_PORT");
-    var dbUser = GetRequiredEnv("DB_USER");
-    var dbName = GetRequiredEnv("DB_NAME");
-    var dbPassword = GetRequiredSecret("/run/secrets/postgres-passwd", "Database Password");
-
-    conn = $"Host={dbHost};Port={dbPort};User ID={dbUser};Password={dbPassword};Database={dbName};Pooling=true;";
-    builder.Configuration["ConnectionStrings:DefaultConnection"] = conn;
+    var jwtKey = File.ReadAllText(jwtKeySecretFile).Trim();
     builder.Configuration["JwtSettings:Key"] = jwtKey;
 }
 
@@ -67,8 +51,10 @@ var CorsPolicies = new Action<CorsPolicyBuilder>(policy =>
 
 builder.Services.AddCors(options => options.AddPolicy(name: AllowLocalDevelopment, CorsPolicies));
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(conn));
-builder.Services.AddDbContext<DevAppDbContext>();
+builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionstring));
+
+if (environment == "Development")
+    builder.Services.AddDbContext<DevAppDbContext>();
 
 builder.Services.AddAutoMapper(typeof(PostUserProfile), typeof(GetBusinessProfile), typeof(PostUserLikeBusinessProfile));
 

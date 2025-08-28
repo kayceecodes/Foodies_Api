@@ -1,10 +1,12 @@
+
 services:
   foodies-api:
     image: kayceecode/foodies-api
-    env_file:
-      - .env
     environment:
-      - JWT_SECRET_FILE=/run/secrets/jwt-secret
+      - JWT_KEY_SECRET_FILE=/run/secrets/jwt-secret
+      - DB_CONNECTION_FILE=/run/secrets/db-connection
+      - ASPNETCORE_ENVIRONMENT=Production
+      # Add any other vars from your .env file here manually or as configs
     ports:
       - "8082:8080"
     depends_on:
@@ -12,6 +14,7 @@ services:
     secrets:
       - postgres-passwd
       - jwt-secret
+      - db-connection
 
   foodies-api-db:
     image: postgres
@@ -26,9 +29,10 @@ services:
     ports:
       - "5430:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
-      interval: 1s
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
       timeout: 5s
+      retries: 5
 
 volumes:
   db-data:
@@ -38,3 +42,5 @@ secrets:
     file: ./secrets/postgres-passwd.txt
   jwt-secret:
     file: ./secrets/jwt-secret.txt
+  db-connection:
+    file: ./secrets/db-connection.txt

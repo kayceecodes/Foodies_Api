@@ -36,7 +36,11 @@ public class AuthService : IAuthService
                 ErrorMessages = [result.Message]
             };
         }
+        var Auth = new Authentication(_config);
+        var token = Auth.CreateAccessToken(result.Data);
         var registerResponse = _mapper.Map<RegisterResponse>(result.Data);
+        registerResponse.Token = token;
+
         _logger.LogInformation("Successfully registered a user");
 
         return new ApiResult<RegisterResponse> { Data = registerResponse, IsSuccess = true, StatusCode = HttpStatusCode.OK };
