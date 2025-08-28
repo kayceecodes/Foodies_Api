@@ -35,6 +35,6 @@ volumes:
 
 secrets:
   postgres-passwd:
-    external: true
+    file: ./secrets/postgres-passwd.txt
   jwt-secret:
-    external: true
+    file: ./secrets/jwt-secret.txt
