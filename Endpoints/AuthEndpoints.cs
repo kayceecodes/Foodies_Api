@@ -18,7 +18,7 @@ public static class AuthEndpoints
         ([FromBody] LoginRequest request, IAuthService service, HttpContext httpContext) =>
         {
             var result = await service.Login(request);
-        
+
             if (!result.IsSuccess)
                 return TypedResults.BadRequest(result);
 
@@ -58,7 +58,7 @@ public static class AuthEndpoints
             });
 
             result.Data.Token = null;
-            
+
             return TypedResults.Ok(result);
         })
         .WithName("Register")
@@ -79,7 +79,7 @@ public static class AuthEndpoints
             });
 
             var result = new ApiResult<LogoutResponse>() { Message = "Logged out" };
-            
+
             return TypedResults.Ok(result);
         })
         .WithName("Logout")
@@ -87,5 +87,12 @@ public static class AuthEndpoints
         .Produces<ApiResult<List<User>>>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status400BadRequest)
         .WithOpenApi();
+
+        // Simple test endpoint
+        app.MapGet("/api/test", () =>
+        {
+            Console.WriteLine("Testing from an auth endpoint!"); // Writes to container/console logs
+            return Results.Ok("OK");
+        });
     }
 }

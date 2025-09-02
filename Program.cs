@@ -18,7 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var AllowLocalDevelopment = "AllowLocalDevelopment";
 
-var connectionstring = configuration["ConnectionStrings:DefaultConnection"];
+var connectionString = configuration["ConnectionStrings:DefaultConnection"];
 string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
 if (environment == "Production") // Production in Docker read from files
@@ -28,7 +28,7 @@ if (environment == "Production") // Production in Docker read from files
     {
         throw new Exception("DB_CONNECTION_FILE is not set or file not found");
     }
-    connectionstring = File.ReadAllText(dbConnFile).Trim();
+    connectionString = File.ReadAllText(dbConnFile).Trim();
 
     var jwtKeySecretFile = builder.Configuration["JWT_KEY_SECRET_FILE"];
     if (string.IsNullOrEmpty(jwtKeySecretFile) || !File.Exists(jwtKeySecretFile))
@@ -42,16 +42,23 @@ if (environment == "Production") // Production in Docker read from files
 
 var CorsPolicies = new Action<CorsPolicyBuilder>(policy =>
 {
-    policy.WithOrigins("http://localhost:3000",
-                        "http://localhost:3001")
-          .AllowAnyOrigin()
+    policy.AllowAnyOrigin()
           .AllowAnyHeader()
           .AllowAnyMethod();
 });
 
 builder.Services.AddCors(options => options.AddPolicy(name: AllowLocalDevelopment, CorsPolicies));
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionstring));
+builder.Services.AddDbContext<AppDbContext>(options => 
+{
+
+    options.UseNpgsql(connectionString);
+    options.EnableSensitiveDataLogging();
+    options.LogTo(Console.WriteLine, LogLevel.Information);
+});
+
+var serviceProvider = builder.Services.BuildServiceProvider();
+var databaseHealthCheck = new DatabaseReadinessChecker<DevAppDbContext>(serviceProvider, 0, null);
 
 if (environment == "Development")
     builder.Services.AddDbContext<DevAppDbContext>();
@@ -76,8 +83,6 @@ builder.Services.AddApiVersioning(options =>
     options.AssumeDefaultVersionWhenUnspecified = true;
     options.ReportApiVersions = true;
 });
-
-// Configure Http Client to Foodies Yelp Service
 builder.Services.AddHttpClient("FoodiesYelpService", client => client.BaseAddress = new Uri(configuration.GetValue<string>("BaseAddress")));
 
 builder.Services.AddAuthentication("Bearer")
@@ -104,6 +109,13 @@ builder.Services.AddAuthorization(options =>
 
 var app = builder.Build();
 
+await databaseHealthCheck.WaitUntilReadyAsync();
+
+app.MapGet("/health", () => {
+    Console.WriteLine("DIRECT: Health endpoint hit!");
+    return Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow });
+});
+
 app.UseGlobalExceptionHandler();
 
 app.UseSwagger();
@@ -113,6 +125,8 @@ app.UseSwaggerUI(options =>
     options.RoutePrefix = string.Empty; // Set the Swagger UI at the root URL
 });
 
+app.UseCors(AllowLocalDevelopment);
+
 // Order of app.func matters. Authentication before Authorization. Both Auths before Controllers/Endpointss
 app.UseAuthentication();
 app.UseAuthorization();
@@ -121,6 +135,5 @@ app.ConfigUserLikeEndpoints();
 app.ConfigAuthEndpoints();
 app.ConfigUserEndpoints();
 
-app.UseCors(AllowLocalDevelopment);
 
 app.Run();
