@@ -69,12 +69,4 @@ public class AuthService : IAuthService
         _logger.LogInformation("Successfully logged in");
         return new ApiResult<LoginResponse> { Data = loginResponse, IsSuccess = true, StatusCode = HttpStatusCode.OK };
     }    
-
-    public async Task<ApiResult<LogoutResponse>> Logout()
-    {
-
-
-       _logger.LogInformation("Successfully logged out");
-        return new ApiResult<LogoutResponse> { IsSuccess = true, StatusCode = HttpStatusCode.OK };
-    }   
 }

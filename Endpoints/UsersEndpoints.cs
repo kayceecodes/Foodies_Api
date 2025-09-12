@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using foodies_api.Models.Entities;
 using foodies_api.Models.Dtos.Requests;
 using foodies_api.Interfaces.Services;
+using System.Security.Claims;
 
 namespace foodies_api.Endpoints;
 
@@ -26,6 +27,33 @@ public static class UserEndpoints
         .Produces<ApiResult<List<User>>>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status400BadRequest)
         .WithOpenApi();
+
+        app.MapGet("/api/users/me", async Task<IResult> (HttpContext httpContext, IUsersService usersService) =>
+        {
+            var userIdClaim = httpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+                return TypedResults.Unauthorized();
+
+            if (!Guid.TryParse(userIdClaim.Value, out var userId))
+                return TypedResults.BadRequest("Invalid user ID format");
+
+            var result = await usersService.GetUserById(userId);
+
+            if (!result.IsSuccess)
+            {
+                return TypedResults.NotFound(result.Message);
+            }
+
+            return TypedResults.Ok(result);
+        })
+        .RequireAuthorization() // This ensures the user must be authenticated
+        .WithName("Get Current User")
+        .Produces<ApiResult<User>>(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status401Unauthorized)
+        .Produces(StatusCodes.Status404NotFound)
+        .WithOpenApi();
+
 
         app.MapDelete("/api/users/{id}", async Task<IResult> (string id, IUsersService usersService) =>
         {

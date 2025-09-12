@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
-using AutoMapper;
-using foodies_api.Data;
 using foodies_api.Models.Dtos.Requests;
 using foodies_api.Models;
 using foodies_api.Models.Entities;
 using foodies_api.Interfaces.Services;
 using foodies_api.Models.Dtos.Responses;
+using System.Security.Claims;
 using System.Net;
+using Microsoft.IdentityModel.Tokens;
 
 namespace foodies_api.Endpoints;
 
@@ -14,7 +14,7 @@ public static class AuthEndpoints
 {
     public static void ConfigAuthEndpoints(this WebApplication app)
     {
-        app.MapPost("/api/login", async Task<IResult>
+        app.MapPost("/api/auth/login", async Task<IResult>
         ([FromBody] LoginRequest request, IAuthService service, HttpContext httpContext) =>
         {
             var result = await service.Login(request);
@@ -40,7 +40,7 @@ public static class AuthEndpoints
         .Produces(StatusCodes.Status400BadRequest)
         .WithOpenApi();
 
-        app.MapPost("/api/register", async Task<IResult>
+        app.MapPost("/api/auth/register", async Task<IResult>
         ([FromBody] RegisterRequest request, IAuthService service, HttpContext httpContext) =>
         {
             var result = await service.Register(request);
@@ -48,7 +48,6 @@ public static class AuthEndpoints
             if (!result.IsSuccess)
                 return TypedResults.BadRequest(result);
 
-            // Set HttpOnly cookie (auto-login after registration)
             httpContext.Response.Cookies.Append("auth-token", result.Data.Token, new CookieOptions
             {
                 HttpOnly = true,
@@ -67,18 +66,27 @@ public static class AuthEndpoints
         .Produces(StatusCodes.Status400BadRequest)
         .WithOpenApi();
 
-        app.MapPost("/api/logout", async Task<IResult>
+        app.MapPost("/api/auth/logout", async Task<IResult>
         ([FromBody] IAuthService service, HttpContext context) =>
         {
+            var wasLoggedIn = context.User.Identity?.IsAuthenticated ?? false;
+
+            // Delete the cookie - try multiple approaches to ensure it's gone
             context.Response.Cookies.Delete("auth-token", new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.Strict,
-                Path = "/" // recommended to include explicitly
+                Path = "/"
             });
 
-            var result = new ApiResult<LogoutResponse>() { Message = "Logged out" };
+
+            var result = new ApiResult<LogoutResponse>()
+            {
+                IsSuccess = true,
+                Message = wasLoggedIn ? "Logged out successfully" : "User was not logged in",
+                StatusCode = (HttpStatusCode)StatusCodes.Status200OK
+            };
 
             return TypedResults.Ok(result);
         })
@@ -88,11 +96,32 @@ public static class AuthEndpoints
         .Produces(StatusCodes.Status400BadRequest)
         .WithOpenApi();
 
-        // Simple test endpoint
-        app.MapGet("/api/test", () =>
+        app.MapGet("/api/auth/verify", async Task<IResult>(HttpContext context) =>
         {
-            Console.WriteLine("Testing from an auth endpoint!"); // Writes to container/console logs
-            return Results.Ok("OK");
-        });
+            var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var email = context.User.FindFirst(ClaimTypes.Name)?.Value;
+
+            if (userId.IsNullOrEmpty() && email.IsNullOrEmpty())
+            {
+                return TypedResults.NotFound(new ApiResult<object>
+                {
+                    IsSuccess = false,
+                    ErrorMessages = ["No users are logged in"]
+                });
+            }
+
+            return TypedResults.Ok(new ApiResult<object>
+                {
+                    IsSuccess = true,
+                    Data = new
+                    {
+                        isAuthenticated = true,
+                        email,
+                        userId
+                    }
+                });
+        })
+        .WithName("Verify Authentication")
+        .WithOpenApi();
     }
 }

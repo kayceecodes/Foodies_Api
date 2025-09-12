@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using foodies_api.Utils;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,28 +24,17 @@ string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"
 
 if (environment == "Production") // Production in Docker read from files
 {
-    var dbConnFile = builder.Configuration["DB_CONNECTION_FILE"];
-    if (string.IsNullOrEmpty(dbConnFile) || !File.Exists(dbConnFile))
-    {
-        throw new Exception("DB_CONNECTION_FILE is not set or file not found");
-    }
-    connectionString = File.ReadAllText(dbConnFile).Trim();
-
-    var jwtKeySecretFile = builder.Configuration["JWT_KEY_SECRET_FILE"];
-    if (string.IsNullOrEmpty(jwtKeySecretFile) || !File.Exists(jwtKeySecretFile))
-    {
-        throw new Exception("JWT_KEY_SECRET_FILE is not set or file not found");
-    }
-
-    var jwtKey = File.ReadAllText(jwtKeySecretFile).Trim();
-    builder.Configuration["JwtSettings:Key"] = jwtKey;
+    var secrets = await ContainerSecrets.ReadSecrets(configuration);
+    builder.Configuration["JwtSettings:Key"] = secrets.JwtKey;
+    connectionString = secrets.ConnectionString; 
 }
 
 var CorsPolicies = new Action<CorsPolicyBuilder>(policy =>
 {
-    policy.AllowAnyOrigin()
-          .AllowAnyHeader()
-          .AllowAnyMethod();
+    policy.WithOrigins("http://localhost:3000", "https://localhost:3001")
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials();
 });
 
 builder.Services.AddCors(options => options.AddPolicy(name: AllowLocalDevelopment, CorsPolicies));
@@ -80,7 +70,6 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddApiVersioning(options =>
 {
     options.DefaultApiVersion = new ApiVersion(1, 0);
-    options.AssumeDefaultVersionWhenUnspecified = true;
     options.ReportApiVersions = true;
 });
 builder.Services.AddHttpClient("FoodiesYelpService", client => client.BaseAddress = new Uri(configuration.GetValue<string>("BaseAddress")));
@@ -99,13 +88,25 @@ builder.Services.AddAuthentication("Bearer")
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
         };
+
+         // Read JWT from cookie instead of Authorization header
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var token = context.Request.Cookies["auth-token"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    context.Token = token;
+                }
+                return Task.CompletedTask;
+            }
+        };
     });
 
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy(Identity.AdminUserPolicyName, p =>
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy(Identity.AdminUserPolicyName, p =>
         p.RequireClaim(Identity.AdminUserClaimName, "true"));
-});
 
 var app = builder.Build();
 
