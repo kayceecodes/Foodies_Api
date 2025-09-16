@@ -81,13 +81,13 @@ public static class AuthEndpoints
             });
 
 
-            var result = new ApiResult<LogoutResponse>()
+            var result = new ApiResult<object>()
             {
                 IsSuccess = true,
                 Message = wasLoggedIn ? "Logged out successfully" : "User was not logged in",
                 StatusCode = (HttpStatusCode)StatusCodes.Status200OK
             };
-
+            Console.WriteLine($"User logged out. IsAuthenticated: {context.User.Identity.IsAuthenticated}");
             return TypedResults.Ok(result);
         })
         .WithName("Logout")
@@ -103,6 +103,7 @@ public static class AuthEndpoints
 
             if (userId.IsNullOrEmpty() && email.IsNullOrEmpty())
             {
+                Console.WriteLine("UserId and/or Email has no value");
                 return TypedResults.NotFound(new ApiResult<object>
                 {
                     IsSuccess = false,
@@ -110,16 +111,17 @@ public static class AuthEndpoints
                 });
             }
 
+            Console.WriteLine("User Verified");
             return TypedResults.Ok(new ApiResult<object>
+            {
+                IsSuccess = true,
+                Data = new
                 {
-                    IsSuccess = true,
-                    Data = new
-                    {
-                        isAuthenticated = true,
-                        email,
-                        userId
-                    }
-                });
+                    isAuthenticated = true,
+                    email,
+                    userId
+                }
+            });
         })
         .WithName("Verify Authentication")
         .WithOpenApi();
