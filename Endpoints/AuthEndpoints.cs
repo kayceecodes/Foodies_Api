@@ -3,7 +3,6 @@ using foodies_api.Models.Dtos.Requests;
 using foodies_api.Models;
 using foodies_api.Models.Entities;
 using foodies_api.Interfaces.Services;
-using foodies_api.Models.Dtos.Responses;
 using System.Security.Claims;
 using System.Net;
 using Microsoft.IdentityModel.Tokens;
@@ -79,7 +78,6 @@ public static class AuthEndpoints
                 SameSite = SameSiteMode.Strict,
                 Path = "/"
             });
-
 
             var result = new ApiResult<object>()
             {

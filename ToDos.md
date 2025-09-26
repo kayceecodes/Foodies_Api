@@ -6,5 +6,6 @@
 5.X Check the result of FindAsync in User's Delete call, FindAsync may never return non null results.
     - resolved: using findAsync does return null (but can be the wrong method in context) use FindFirst, Any, etc. instead
 6. Navigation properties are returning null. Make sure endpoints are returning DTOs or Response objects instead.
-(Note) - AddUserLikes, GetUserLikes (by id) and Delete UserLikes works.
-7. 7 Start diagram (maybe DbBeaver's Diagram tool). Look for any EF specific tools.
+   (Note) - AddUserLikes, GetUserLikes (by id) and Delete UserLikes works.
+7. Start diagram (maybe DbBeaver's Diagram tool). Look for any EF specific tools.
+8. Be sure to make a list of the backend features for presentation reasons.
