@@ -43,7 +43,7 @@ public class FoodiesYelpService : IFoodiesYelpService
             { 
                 IsSuccess = false, 
                 StatusCode = HttpStatusCode.BadRequest, 
-                ErrorMessages = ["Couldn't get any Businesses"] 
+                Errors = ["Couldn't get any Businesses"] 
             };
 
         return new ApiResult<GetBusinessResponse> { Data = business, IsSuccess = true, StatusCode = HttpStatusCode.OK };

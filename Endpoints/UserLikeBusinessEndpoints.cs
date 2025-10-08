@@ -32,7 +32,7 @@ public static class UserLikeBusinessEndpoints
 
             var result = await usersLikeService.AddUserLikes(userLikeDto);
             if (!result.IsSuccess)
-                return TypedResults.BadRequest(result.ErrorMessages);
+                return TypedResults.BadRequest(result.Errors);
 
             return TypedResults.Ok(result);
 
@@ -53,7 +53,7 @@ public static class UserLikeBusinessEndpoints
             ApiResult<UserLikeBusinessDto> result = await service.RemoveUserLikes(userLikeBusinessDto);
 
             if (!result.IsSuccess)
-                return TypedResults.BadRequest(result.ErrorMessages);
+                return TypedResults.BadRequest(result.Errors);
 
             return TypedResults.Ok(result);
 
@@ -72,7 +72,7 @@ public static class UserLikeBusinessEndpoints
             ApiResult<List<UserLikeBusinessDto>> result = await service.GetUserLikesByUserId(userGuid);
 
             if (!result.IsSuccess)
-                return TypedResults.BadRequest(result.ErrorMessages);
+                return TypedResults.BadRequest(result.Errors);
 
             return TypedResults.Ok(result);
 

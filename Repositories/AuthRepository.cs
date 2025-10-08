@@ -66,14 +66,14 @@ namespace foodies_api.Repositories
                 return new RepositoryResponse<User>()
                 {
                     Success = false,
-                    Message = "Username exists, choose another username"
+                    Errors = [ "Username exists, choose another username" ]
                 };
 
             if (emailexists)
                 return new RepositoryResponse<User>()
                 {
                     Success = false,
-                    Message = "Email already exists, use another email"
+                    Errors = ["Email already exists, use another email"]
                 };
 
             user.Id = Guid.NewGuid();

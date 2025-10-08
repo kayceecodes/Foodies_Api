@@ -42,7 +42,7 @@ namespace foodies_api.Services
                 { 
                     IsSuccess = false, 
                     StatusCode = HttpStatusCode.BadRequest, 
-                    ErrorMessages = [result.Message],
+                    Errors = result.Errors,
                     Exception = result.Exception 
                 };
             }
@@ -58,7 +58,7 @@ namespace foodies_api.Services
         /// <returns>
         /// An <see cref="ApiResult{T}"/> containing the user if found
         /// </returns>
-            public async Task<ApiResult<User>> GetUserById(Guid userId)
+        public async Task<ApiResult<User>> GetUserById(Guid userId)
         {
             var result = await _repository.GetUserById(userId);
 
@@ -69,7 +69,7 @@ namespace foodies_api.Services
                 { 
                     IsSuccess = false, 
                     StatusCode = HttpStatusCode.BadRequest, 
-                    ErrorMessages = [result.Message]
+                    Errors = result.Errors
                 };
             }
 
@@ -95,7 +95,7 @@ namespace foodies_api.Services
                 { 
                     IsSuccess = false, 
                     StatusCode = HttpStatusCode.BadRequest, 
-                    ErrorMessages = [result.Message] 
+                    Errors = result.Errors 
                 };
             }
 
@@ -123,7 +123,7 @@ namespace foodies_api.Services
                 { 
                     IsSuccess = false, 
                     StatusCode = HttpStatusCode.BadRequest,
-                    ErrorMessages = [$"Unable to update user with user ID {userId}"] 
+                    Errors = [$"Unable to update user with user ID {userId}"] 
                 };
             }
 

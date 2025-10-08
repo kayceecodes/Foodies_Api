@@ -46,7 +46,7 @@ public class BusinessService : IBusinessService
             { 
                 IsSuccess = false, 
                 StatusCode = HttpStatusCode.BadRequest, 
-                ErrorMessages = [result.Message] 
+                Errors = result.Errors 
             };
         }
         _logger.LogInformation("Successfully added a new business");

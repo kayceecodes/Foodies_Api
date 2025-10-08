@@ -24,5 +24,5 @@ public class PostUserProfile : Profile
 
         CreateMap<User, LoginResponse>();
         CreateMap<LoginResponse, User>();
-        }    
+    }    
 }

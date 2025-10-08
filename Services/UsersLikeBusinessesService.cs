@@ -32,7 +32,7 @@ public class UsersLikeBusinessesService : IUsersLikeBusinessesService
         }
         else {
             _logger.LogError("Could not add to UserLikeBusiness");
-            return new ApiResult<UserLikeBusinessDto> { IsSuccess = false, ErrorMessages = ["Couldn't add UserLikeBusiness"]};
+            return new ApiResult<UserLikeBusinessDto> { IsSuccess = false, Errors = ["Couldn't add UserLikeBusiness"]};
         }
     }
     public async Task<ApiResult<UserLikeBusinessDto>> RemoveUserLikes(UserLikeBusinessDto dto)
@@ -43,7 +43,7 @@ public class UsersLikeBusinessesService : IUsersLikeBusinessesService
         {
             var message = $"Couldn't delete {dto.BusinessName} from UserLikeBusinesses";
             _logger.LogError(message);
-            return ApiResult<UserLikeBusinessDto>.Fail(message, HttpStatusCode.BadRequest);
+            return ApiResult<UserLikeBusinessDto>.Fail([message], HttpStatusCode.BadRequest);
         }
 
         return ApiResult<UserLikeBusinessDto>.Pass(dto);
@@ -60,7 +60,7 @@ public class UsersLikeBusinessesService : IUsersLikeBusinessesService
             { 
                 IsSuccess = false, 
                 StatusCode = HttpStatusCode.BadRequest, 
-                ErrorMessages = ["Couldn't get any UserLikeBusinesses"] 
+                Errors = ["Couldn't get any UserLikeBusinesses"] 
             };
         }
 

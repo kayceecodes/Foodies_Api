@@ -43,8 +43,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 {
 
     options.UseNpgsql(connectionString);
-    options.EnableSensitiveDataLogging();
-    options.LogTo(Console.WriteLine, LogLevel.Information);
+    //options.EnableSensitiveDataLogging();
+    //options.LogTo(Console.WriteLine, LogLevel.Information);
 });
 
 var serviceProvider = builder.Services.BuildServiceProvider();

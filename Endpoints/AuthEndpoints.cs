@@ -105,7 +105,7 @@ public static class AuthEndpoints
                 return TypedResults.NotFound(new ApiResult<object>
                 {
                     IsSuccess = false,
-                    ErrorMessages = ["No users are logged in"]
+                    Errors = ["No users are logged in"]
                 });
             }
 

@@ -33,7 +33,7 @@ public class AuthService : IAuthService
             {
                 IsSuccess = false,
                 StatusCode = HttpStatusCode.BadRequest,
-                ErrorMessages = [result.Message]
+                Errors = result.Errors
             };
         }
         var Auth = new Authentication(_config);
@@ -57,7 +57,7 @@ public class AuthService : IAuthService
             {
                 IsSuccess = false,
                 StatusCode = HttpStatusCode.BadRequest,
-                ErrorMessages = [result.Message]
+                Errors = result.Errors
             };
         }
 

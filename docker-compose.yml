@@ -17,6 +17,7 @@ services:
       - postgres-passwd
       - jwt-secret
       - db-connection
+    restart: always
 
   foodies-api-db:
     image: postgres
@@ -35,6 +36,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: always
 
 volumes:
   db-data:
