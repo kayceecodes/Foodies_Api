@@ -9,3 +9,4 @@
    (Note) - AddUserLikes, GetUserLikes (by id) and Delete UserLikes works.
 7. Start diagram (maybe DbBeaver's Diagram tool). Look for any EF specific tools.
 8. Be sure to make a list of the backend features for presentation reasons.
+9. Change JWT Keys/Secret to just JWT_KEY or JwtKey
