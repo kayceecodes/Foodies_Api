@@ -57,7 +57,8 @@ public class AuthService : IAuthService
             {
                 IsSuccess = false,
                 StatusCode = HttpStatusCode.BadRequest,
-                Errors = result.Errors
+                Errors = result.Errors,
+                Message = result.Message
             };
         }
 

@@ -41,7 +41,12 @@ namespace foodies_api.Repositories
                 if (matchedUser == null)
                 {
                     _logger.LogError("Can not find user");
-                    return new RepositoryResponse<User>() { Data = null, Success = false, Message = "Unable to find user" };
+                    return new RepositoryResponse<User>() { 
+                        Data = null, 
+                        Success = false, 
+                        Message = "User email/password does not match", 
+                        Errors = new() {"Cannot find user by email or username"}
+                    };
                 }
             }
             catch (Exception ex)
