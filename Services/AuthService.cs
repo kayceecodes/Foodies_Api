@@ -7,19 +7,23 @@ using foodies_api.Models;
 using foodies_api.Models.Dtos.Requests;
 using foodies_api.Models.Dtos.Responses;
 using foodies_api.Models.Entities;
+using Microsoft.AspNetCore.Http;
 
 public class AuthService : IAuthService
 {
+    public IHttpContextAccessor _httpContext;
     public ILogger<AuthService> _logger;
     public IMapper _mapper;
     public IAuthRepository _repository;
     public IConfiguration _config;
-    public AuthService(ILogger<AuthService> logger, IMapper mapper, IAuthRepository repository, IConfiguration config)
+    public AuthService(IHttpContextAccessor httpContextAccessor, ILogger<AuthService> logger, IMapper mapper, IAuthRepository repository, IConfiguration config)
     {
+        _httpContext = httpContextAccessor;
         _logger = logger;
         _mapper = mapper;
         _repository = repository;
         _config = config;
+
     }
     public async Task<ApiResult<RegisterResponse>> Register(RegisterRequest request)
     {
