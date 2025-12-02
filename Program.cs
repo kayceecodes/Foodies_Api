@@ -39,6 +39,8 @@ var CorsPolicies = new Action<CorsPolicyBuilder>(policy =>
 
 builder.Services.AddCors(options => options.AddPolicy(name: AllowLocalDevelopment, CorsPolicies));
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddDbContext<AppDbContext>(options => 
 {
 
