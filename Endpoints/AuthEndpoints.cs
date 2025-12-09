@@ -30,7 +30,7 @@ public static class AuthEndpoints
             });
 
             result.Data.Token = null;
-
+                                                                                    
             return TypedResults.Ok(result);
         })
         .WithName("Login")

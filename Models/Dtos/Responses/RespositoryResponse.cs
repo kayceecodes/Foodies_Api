@@ -6,7 +6,6 @@ public class RepositoryResponse<T>
 {
         public bool Success { get; set; }
         public T Data { get; set; }
-        public Exception Exception { get; set; }
         public string Message { get; set; }
         public List<string> Errors { get; set; } = new();
 
@@ -16,7 +15,7 @@ public class RepositoryResponse<T>
             {
                 Success = true,
                 Data = data,
-                Exception = null
+                Message = null
             };
         }
 
@@ -26,7 +25,7 @@ public class RepositoryResponse<T>
             {
                 Success = false,
                 Data = data,
-                Exception = exception
+                Errors = [] 
             };
         }
 
