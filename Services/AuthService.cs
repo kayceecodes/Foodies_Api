@@ -7,7 +7,6 @@ using foodies_api.Models;
 using foodies_api.Models.Dtos.Requests;
 using foodies_api.Models.Dtos.Responses;
 using foodies_api.Models.Entities;
-using Microsoft.AspNetCore.Http;
 
 public class AuthService : IAuthService
 {
@@ -16,7 +15,12 @@ public class AuthService : IAuthService
     public IMapper _mapper;
     public IAuthRepository _repository;
     public IConfiguration _config;
-    public AuthService(IHttpContextAccessor httpContextAccessor, ILogger<AuthService> logger, IMapper mapper, IAuthRepository repository, IConfiguration config)
+    public AuthService(
+        IHttpContextAccessor httpContextAccessor,
+        ILogger<AuthService> logger,
+        IMapper mapper,
+        IAuthRepository repository,
+        IConfiguration config)
     {
         _httpContext = httpContextAccessor;
         _logger = logger;
@@ -41,14 +45,20 @@ public class AuthService : IAuthService
                 Message = result.Message
             };
         }
-        var Auth = new Authentication(_config);
-        var token = Auth.CreateAccessToken(result.Data);
+        var AuthConfig = new Authentication(_config);
+        var token = AuthConfig.CreateAccessToken(result.Data);
         var registerResponse = _mapper.Map<RegisterResponse>(result.Data);
         registerResponse.Token = token;
 
         _logger.LogInformation("Successfully registered a user");
 
-        return new ApiResult<RegisterResponse> { Data = registerResponse, IsSuccess = true, StatusCode = HttpStatusCode.OK };
+        return new ApiResult<RegisterResponse>
+        {
+            Data = registerResponse,
+            IsSuccess = true,
+            StatusCode = HttpStatusCode.OK,
+            Message = result.Message
+        };
     }
 
     public async Task<ApiResult<LoginResponse>> Login(LoginRequest request)
@@ -67,12 +77,18 @@ public class AuthService : IAuthService
             };
         }
 
-        var Auth = new Authentication(_config);
-        var token = Auth.CreateAccessToken(result.Data);
+        var AuthConfig = new Authentication(_config);
+        var token = AuthConfig.CreateAccessToken(result.Data);
         var loginResponse = _mapper.Map<LoginResponse>(result.Data);
         loginResponse.Token = token;
 
         _logger.LogInformation("Successfully logged in");
-        return new ApiResult<LoginResponse> { Data = loginResponse, IsSuccess = true, StatusCode = HttpStatusCode.OK };
-    }    
+        return new ApiResult<LoginResponse>
+        {
+            Data = loginResponse,
+            IsSuccess = true,
+            StatusCode = HttpStatusCode.OK,
+            Message = result.Message
+        };
+    }
 }

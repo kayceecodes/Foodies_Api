@@ -18,6 +18,6 @@ public class PostUserProfile : Profile
         CreateMap<RegisterRequest, RegisterResponse>();
 
         CreateMap<User, LoginResponse>();
-        CreateMap<LoginResponse, User>();
+        CreateMap<LoginResponse, User>();    
     }    
 }

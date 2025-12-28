@@ -43,7 +43,6 @@ namespace foodies_api.Services
                     IsSuccess = false, 
                     StatusCode = HttpStatusCode.BadRequest, 
                     Errors = result.Errors,
-                    Exception = result.Exception 
                 };
             }
 

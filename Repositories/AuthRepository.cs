@@ -45,7 +45,7 @@ namespace foodies_api.Repositories
                         Data = null, 
                         Success = false, 
                         Message = "User email/password does not match", 
-                        Errors = new() {"Cannot find user by email or username"}
+                        Errors = ["Cannot find user by email or username"]
                     };
                 }
             }
@@ -55,7 +55,7 @@ namespace foodies_api.Repositories
                 return new RepositoryResponse<User>()
                 {
                     Success = false,
-                    Exception = ex
+                    Errors = [ex.Message]
                 };
             }
 
@@ -72,6 +72,7 @@ namespace foodies_api.Repositories
                 {
                     Success = false,
                     Message = "Username exists, choose another username",
+                    Errors = ["Duplicate username, cannot add the same username"]
                 };
 
             if (emailexists)
@@ -79,6 +80,7 @@ namespace foodies_api.Repositories
                 {
                     Success = false,
                     Message = "Email already exists, use another email",
+                    Errors = ["Duplicate email, cannot add the same email"]
                 };
 
             user.Id = Guid.NewGuid();

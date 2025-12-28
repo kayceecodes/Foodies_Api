@@ -46,7 +46,7 @@ namespace foodies_api.Repositories
                 return new RepositoryResponse<List<User>>()
                 {
                     Success = false,
-                    Exception = ex
+                    Errors = [ex.Message]
                 };
             }
         }
@@ -84,7 +84,7 @@ namespace foodies_api.Repositories
                 return new RepositoryResponse<User>()
                 {
                     Success = false,
-                    Exception = ex
+                    Errors = [ex.Message]
                 };
             }
         }
@@ -124,7 +124,7 @@ namespace foodies_api.Repositories
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failed to delete user with ID {userId}");
-                return new RepositoryResponse<User>() { Success = false, Exception = ex };
+                return new RepositoryResponse<User>() { Success = false, Errors = [ex.Message] };
             }
         }
 
@@ -166,7 +166,7 @@ namespace foodies_api.Repositories
                 return new RepositoryResponse<User>()
                 {
                     Success = false,
-                    Exception = ex
+                    Errors = [ex.Message]
                 };
             }
         }

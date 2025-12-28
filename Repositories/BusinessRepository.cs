@@ -42,7 +42,7 @@ public class BusinessRepository(AppDbContext context) : IBusinessRepository
         } 
         catch (Exception ex) 
         {
-                return new RepositoryResponse<Business>() { Success = false, Exception = ex };
+                return new RepositoryResponse<Business>() { Success = false, Errors = [ex.Message] };
         }
     }
 }

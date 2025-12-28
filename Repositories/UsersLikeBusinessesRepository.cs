@@ -36,11 +36,11 @@ public class UsersLikeBusinessesRepository : IUsersLikeBusinessesRepository
             var result = await _context.UserLikeBusinesses.AddAsync(userLike);
             await _context.SaveChangesAsync();
 
-            return new RepositoryResponse<UserLikeBusiness>() { Success = true, Data = userLike, Exception = null };
+            return new RepositoryResponse<UserLikeBusiness>() { Success = true, Data = userLike };
         }
         catch (Exception ex)
         {
-            return new RepositoryResponse<UserLikeBusiness>() { Success = false, Exception = ex };
+            return new RepositoryResponse<UserLikeBusiness>() { Success = false, Errors = [ex.Message] };
         }
     }
 
@@ -60,7 +60,7 @@ public class UsersLikeBusinessesRepository : IUsersLikeBusinessesRepository
             return new RepositoryResponse<UserLikeBusiness>()
             {
                 Success = true,
-                Exception = new KeyNotFoundException($"Entity of type UserLikeBusiness could not be found.")
+                Errors = ["Entity of type UserLikeBusiness could not be found."]
             };
 
         try
@@ -70,7 +70,7 @@ public class UsersLikeBusinessesRepository : IUsersLikeBusinessesRepository
             return new RepositoryResponse<UserLikeBusiness>()
             {
                 Success = true,
-                Exception = null,
+                Errors = null,
                 Data = userLike,
                 Message = $"Userlikebusiness {userLike.Username}, from {userLike.BusinessName} deleted."
             };
@@ -78,7 +78,7 @@ public class UsersLikeBusinessesRepository : IUsersLikeBusinessesRepository
         }
         catch (Exception ex)
         {
-            return new RepositoryResponse<UserLikeBusiness>() { Success = false, Exception = ex };
+            return new RepositoryResponse<UserLikeBusiness>() { Success = false, Errors = [ex.Message] };
         }
     }
 
@@ -108,7 +108,7 @@ public class UsersLikeBusinessesRepository : IUsersLikeBusinessesRepository
             return new RepositoryResponse<List<UserLikeBusiness>>()
             {
                 Success = false,
-                Exception = ex
+                Errors = [ex.Message]
             };
         }
     }
@@ -129,7 +129,7 @@ public class UsersLikeBusinessesRepository : IUsersLikeBusinessesRepository
             return new RepositoryResponse<UserLikeBusiness>() 
             { 
                 Success = false, 
-                Exception = ex 
+                Errors = [ex.Message] 
             };
         }
     }
