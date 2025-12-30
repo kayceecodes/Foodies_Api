@@ -47,7 +47,7 @@ public static class UserEndpoints
 
             return TypedResults.Ok(result);
         })
-        .RequireAuthorization() // This ensures the user must be authenticated
+        .RequireAuthorization()
         .WithName("Get Current User")
         .Produces<ApiResult<User>>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status401Unauthorized)

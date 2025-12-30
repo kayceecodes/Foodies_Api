@@ -11,3 +11,4 @@
 8. Be sure to make a list of the backend features for presentation reasons.
 9. Change JWT Keys/Secret to just JWT_KEY or JwtKey
 10. Swap out httpcontext for httpcontextaccessor
+11. Remove httpContext from endpoint /api/users/me
