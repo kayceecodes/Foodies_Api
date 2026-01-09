@@ -31,7 +31,7 @@ if (environment == "Production") // Production in Docker read from files
 
 var CorsPolicies = new Action<CorsPolicyBuilder>(policy =>
 {
-    policy.WithOrigins("http://localhost:3000", "https://localhost:3001")
+    policy.WithOrigins("http://localhost:3000", "https://localhost:3000", "http://localhost:3001", "https://localhost:3001")
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials();
