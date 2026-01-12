@@ -32,9 +32,6 @@ public static class UserEndpoints
         {
             var userIdClaim = httpContext.User.FindFirst(ClaimTypes.NameIdentifier);
 
-            if (userIdClaim == null)
-                return TypedResults.Unauthorized();
-
             if (!Guid.TryParse(userIdClaim.Value, out var userId))
                 return TypedResults.BadRequest("Invalid user ID format");
 

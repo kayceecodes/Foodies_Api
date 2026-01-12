@@ -16,7 +16,7 @@ public class ApiResult<T>
     public string Message { get; set; }
     public List<string> Errors { get; set; } = new();
 
-    public static ApiResult<T> Fail(List<string> errors, HttpStatusCode statusCode, Exception? exception = null)
+    public static ApiResult<T> Fail(List<string> errors, HttpStatusCode statusCode)
         {
             return new ApiResult<T>
             {
@@ -27,28 +27,14 @@ public class ApiResult<T>
             };
         }
 
-        public static ApiResult<T> Pass(T data)
+    public static ApiResult<T> Pass(T data)
+    {
+        return new ApiResult<T>
         {
-            return new ApiResult<T>
-            {
-                IsSuccess = true,
-                Data = data,
-                StatusCode = HttpStatusCode.OK,
-                Errors = null,
-            };
-        }
+            IsSuccess = true,
+            Data = data,
+            StatusCode = HttpStatusCode.OK,
+            Errors = null,
+        };
+    }
 }
-
-// public class ApiResult
-// {
-//     public ApiResult()
-//     {
-//         ErrorMessages = new List<string>();
-//     }
-//     public bool IsSuccess { get; set; }
-//     public object Data { get; set; }
-//     public HttpStatusCode StatusCode { get; set; }
-//     public string Message { get; set;}
-//     public List<string> ErrorMessages { get; set; }
-//     public string Exception { get; set; }
-// }

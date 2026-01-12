@@ -55,6 +55,8 @@ var databaseHealthCheck = new DatabaseReadinessChecker<DevAppDbContext>(serviceP
 if (environment == "Development")
     builder.Services.AddDbContext<DevAppDbContext>();
 
+builder.Services.AddProblemDetails();
+
 builder.Services.AddAutoMapper(typeof(PostUserProfile), typeof(GetBusinessProfile), typeof(PostUserLikeBusinessProfile));
 
 builder.Services.AddScoped<IUsersLikeBusinessesRepository, UsersLikeBusinessesRepository>();
@@ -117,6 +119,32 @@ await databaseHealthCheck.WaitUntilReadyAsync();
 app.MapGet("/health", () => {
     Console.WriteLine("DIRECT: Health endpoint hit!");
     return Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow });
+});
+
+
+// Configure status code pages to return JSON
+app.UseStatusCodePages(async context =>
+{
+    context.HttpContext.Response.ContentType = "application/json";
+    
+    var problem = new ProblemDetails
+    {
+        Status = context.HttpContext.Response.StatusCode,
+        Title = context.HttpContext.Response.StatusCode switch
+        {
+            401 => "Unauthorized",
+            403 => "Forbidden",
+            _ => "An error occurred"
+        },
+        Detail = context.HttpContext.Response.StatusCode switch
+        {
+            401 => "Authentication is required",
+            403 => "You don't have permission to access this resource",
+            _ => null
+        }
+    };
+    
+    await context.HttpContext.Response.WriteAsJsonAsync(problem);
 });
 
 app.UseGlobalExceptionHandler();
