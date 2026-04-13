@@ -66,7 +66,7 @@ public static class AuthEndpoints
         .WithOpenApi();
 
         app.MapPost("/api/auth/logout", async Task<IResult>
-        ([FromBody] IAuthService service, HttpContext context) =>
+        (IAuthService service, HttpContext context) =>
         {
             var wasLoggedIn = context.User.Identity?.IsAuthenticated ?? false;
 

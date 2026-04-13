@@ -26,31 +26,26 @@ if (environment == "Production") // Production in Docker read from files
 {
     var secrets = await ContainerSecrets.ReadSecrets(configuration);
     builder.Configuration["JwtSettings:Key"] = secrets.JwtKey;
-    connectionString = secrets.ConnectionString; 
+    connectionString = secrets.ConnectionString;
 }
 
 var CorsPolicies = new Action<CorsPolicyBuilder>(policy =>
 {
-    policy.WithOrigins("http://localhost:3000", "https://localhost:3000", "http://localhost:3001", "https://localhost:3001")
+    policy.WithOrigins("https://foodies-client-theta.vercel.app","http://localhost:3000", "https://localhost:3000", "http://localhost:3001", "https://localhost:3001")
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials();
 });
 
 builder.Services.AddCors(options => options.AddPolicy(name: AllowLocalDevelopment, CorsPolicies));
-
 builder.Services.AddHttpContextAccessor();
-
-builder.Services.AddDbContext<AppDbContext>(options => 
+builder.Services.AddDbContext<AppDbContext>(options =>
 {
 
     options.UseNpgsql(connectionString);
     //options.EnableSensitiveDataLogging();
     //options.LogTo(Console.WriteLine, LogLevel.Information);
 });
-
-var serviceProvider = builder.Services.BuildServiceProvider();
-var databaseHealthCheck = new DatabaseReadinessChecker<DevAppDbContext>(serviceProvider, 0, null);
 
 if (environment == "Development")
     builder.Services.AddDbContext<DevAppDbContext>();
@@ -76,6 +71,7 @@ builder.Services.AddApiVersioning(options =>
     options.DefaultApiVersion = new ApiVersion(1, 0);
     options.ReportApiVersions = true;
 });
+
 builder.Services.AddHttpClient("FoodiesYelpService", client => client.BaseAddress = new Uri(configuration.GetValue<string>("BaseAddress")));
 
 builder.Services.AddAuthentication("Bearer")
@@ -93,7 +89,7 @@ builder.Services.AddAuthentication("Bearer")
             ValidateIssuerSigningKey = true,
         };
 
-         // Read JWT from cookie instead of Authorization header
+        // Read JWT from cookie instead of Authorization header
         options.Events = new JwtBearerEvents
         {
             OnMessageReceived = context =>
@@ -107,26 +103,18 @@ builder.Services.AddAuthentication("Bearer")
             }
         };
     });
-
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy(Identity.AdminUserPolicyName, p =>
         p.RequireClaim(Identity.AdminUserClaimName, "true"));
 
+
 var app = builder.Build();
-
-await databaseHealthCheck.WaitUntilReadyAsync();
-
-app.MapGet("/health", () => {
-    Console.WriteLine("DIRECT: Health endpoint hit!");
-    return Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow });
-});
-
 
 // Configure status code pages to return JSON
 app.UseStatusCodePages(async context =>
 {
     context.HttpContext.Response.ContentType = "application/json";
-    
+
     var problem = new ProblemDetails
     {
         Status = context.HttpContext.Response.StatusCode,
@@ -143,7 +131,7 @@ app.UseStatusCodePages(async context =>
             _ => null
         }
     };
-    
+
     await context.HttpContext.Response.WriteAsJsonAsync(problem);
 });
 
