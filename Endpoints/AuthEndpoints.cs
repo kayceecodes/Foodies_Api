@@ -5,7 +5,6 @@ using foodies_api.Models.Entities;
 using foodies_api.Interfaces.Services;
 using System.Security.Claims;
 using System.Net;
-using Microsoft.IdentityModel.Tokens;
 
 namespace foodies_api.Endpoints;
 
@@ -36,8 +35,7 @@ public static class AuthEndpoints
         .WithName("Login")
         .Accepts<string>("application/json")
         .Produces<ApiResult<List<User>>>(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status400BadRequest)
-        .WithOpenApi();
+        .Produces(StatusCodes.Status400BadRequest);
 
         app.MapPost("/api/auth/register", async Task<IResult>
         ([FromBody] RegisterRequest request, IAuthService service, HttpContext httpContext) =>
@@ -62,8 +60,7 @@ public static class AuthEndpoints
         .WithName("Register")
         .Accepts<string>("application/json")
         .Produces<ApiResult<List<User>>>(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status400BadRequest)
-        .WithOpenApi();
+        .Produces(StatusCodes.Status400BadRequest);
 
         app.MapPost("/api/auth/logout", async Task<IResult>
         (IAuthService service, HttpContext context) =>
@@ -91,15 +88,14 @@ public static class AuthEndpoints
         .WithName("Logout")
         .Accepts<string>("application/json")
         .Produces<ApiResult<List<User>>>(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status400BadRequest)
-        .WithOpenApi();
+        .Produces(StatusCodes.Status400BadRequest);
 
         app.MapGet("/api/auth/verify", async Task<IResult>(HttpContext context) =>
         {
             var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var email = context.User.FindFirst(ClaimTypes.Name)?.Value;
 
-            if (userId.IsNullOrEmpty() && email.IsNullOrEmpty())
+            if (string.IsNullOrEmpty(userId) && string.IsNullOrEmpty(email))
             {
                 Console.WriteLine("UserId and/or Email has no value");
                 return TypedResults.NotFound(new ApiResult<object>
@@ -122,6 +118,9 @@ public static class AuthEndpoints
             });
         })
         .WithName("Verify Authentication")
-        .WithOpenApi();
+        .WithSummary("Verifies if user is authenticated using email or userId")
+        .Accepts<string>("application/json")
+        .Produces(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status400BadRequest);
     }
 }

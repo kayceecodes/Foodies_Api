@@ -29,7 +29,7 @@ namespace foodies_api.Repositories
 
             try
             {
-                if (!request.Email.IsNullOrEmpty())
+                if (!string.IsNullOrEmpty(request.Email))
                     matchedUser = await _context.Users
                     .Where(u => u.Email == request.Email && u.Password == request.Password)
                     .FirstOrDefaultAsync();

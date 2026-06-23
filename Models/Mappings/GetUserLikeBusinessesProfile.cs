@@ -4,9 +4,9 @@ using foodies_api.Models.Entities;
 
 namespace foodies_api.Models.Mappings;
 
-public class GetUserLikeBusinesses : Profile
+public class GetUserLikeBusinessesProfile : Profile
 {
-    public GetUserLikeBusinesses()
+    public GetUserLikeBusinessesProfile()
     {
         CreateMap<UserLikeBusinessDto, UserLikeBusiness>();
     }

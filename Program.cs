@@ -52,7 +52,13 @@ if (environment == "Development")
 
 builder.Services.AddProblemDetails();
 
-builder.Services.AddAutoMapper(typeof(PostUserProfile), typeof(GetBusinessProfile), typeof(PostUserLikeBusinessProfile));
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddProfile<GetBusinessProfile>();
+    cfg.AddProfile<PostUserLikeBusinessProfile>();
+    cfg.AddProfile<GetUserLikeBusinessesProfile>();
+    cfg.AddProfile<PostUserProfile>();
+});
 
 builder.Services.AddScoped<IUsersLikeBusinessesRepository, UsersLikeBusinessesRepository>();
 builder.Services.AddScoped<IUsersLikeBusinessesService, UsersLikeBusinessesService>();

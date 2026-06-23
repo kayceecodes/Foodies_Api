@@ -25,8 +25,7 @@ public static class UserEndpoints
         .WithName("Get Users")
         .Accepts<string>("application/json")
         .Produces<ApiResult<List<User>>>(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status400BadRequest)
-        .WithOpenApi();
+        .Produces(StatusCodes.Status400BadRequest);
 
         app.MapGet("/api/users/me", async Task<IResult> (HttpContext httpContext, IUsersService usersService) =>
         {
@@ -48,9 +47,7 @@ public static class UserEndpoints
         .WithName("Get Current User")
         .Produces<ApiResult<User>>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status401Unauthorized)
-        .Produces(StatusCodes.Status404NotFound)
-        .WithOpenApi();
-
+        .Produces(StatusCodes.Status404NotFound);
 
         app.MapDelete("/api/users/{id}", async Task<IResult> (string id, IUsersService usersService) =>
         {
@@ -68,8 +65,7 @@ public static class UserEndpoints
         .Accepts<string>("application/json")
         .Produces(StatusCodes.Status204NoContent)
         .Produces(StatusCodes.Status400BadRequest)
-        .Produces(StatusCodes.Status404NotFound)
-        .WithOpenApi();
+        .Produces(StatusCodes.Status404NotFound);
 
         app.MapPut("/api/users/{id}", async Task<IResult> (string id, [FromBody] UserUpdateRequest request, IUsersService usersService) =>
         {
@@ -86,7 +82,6 @@ public static class UserEndpoints
         .WithName("Update User")
         .Accepts<string>("application/json")
         .Produces(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status404NotFound)
-        .WithOpenApi();
+        .Produces(StatusCodes.Status404NotFound);
     }
 }

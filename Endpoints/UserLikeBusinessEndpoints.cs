@@ -38,6 +38,7 @@ public static class UserLikeBusinessEndpoints
 
         })
         .WithName("AddUsersLikeBusinessses")
+        .WithDescription("Adds a new business that a user liked")
         .Accepts<UserLikeBusinessDto>("application/json")
         .Produces<ApiResult<List<UserLikeBusinessDto>>>(StatusCodes.Status201Created)
         .Produces(StatusCodes.Status400BadRequest)
@@ -59,6 +60,7 @@ public static class UserLikeBusinessEndpoints
 
         })
         .WithName("RemoveUsersLikeBusinessse")
+        .WithDescription("Removes a business from a list of liked businesses")
         .Accepts<UserLikeBusinessDto>("application/json")
         .Produces<ApiResult<List<UserLikeBusinessDto>>>(StatusCodes.Status204NoContent)
         .Produces(StatusCodes.Status400BadRequest)
@@ -78,6 +80,7 @@ public static class UserLikeBusinessEndpoints
 
         })
         .WithName("GetUserLikeBusinesses")
+        .WithSummary("Grabs a list of liked businesses a users own")
         .Accepts<UserLikeBusinessDto>("application/json")
         .Produces<ApiResult<List<UserLikeBusinessDto>>>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status400BadRequest)
