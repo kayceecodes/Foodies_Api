@@ -33,7 +33,7 @@ var CorsPolicies = new Action<CorsPolicyBuilder>(policy =>
 {
     policy.WithOrigins("https://foodies-client-theta.vercel.app","http://localhost:3000", "https://localhost:3000", "http://localhost:3001", "https://localhost:3001")
         .WithHeaders("Authorization", "Content-Type")
-        .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+        .AllowAnyMethod()
         .AllowCredentials();
 });
 
