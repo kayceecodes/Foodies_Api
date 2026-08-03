@@ -67,7 +67,7 @@ public static class UserEndpoints
         .Produces(StatusCodes.Status400BadRequest)
         .Produces(StatusCodes.Status404NotFound);
 
-        app.MapPut("/api/users/{id}", async Task<IResult> (string id, [FromBody] UserUpdateRequest request, IUsersService usersService) =>
+        app.MapPut("/api/users/{id}", async Task<IResult> (string id, UserUpdateRequest request, IUsersService usersService) =>
         {
             Guid userId = Guid.Parse(id);
             var result = await usersService.UpdateUser(userId, request);
